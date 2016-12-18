@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     private static final String TAG = "OCVSample::Activity";
 
     private CameraBridgeViewBase mOpenCvCameraView;
-    private boolean              mIsJavaCamera = true;
+    private boolean  mIsJavaCamera = true;
     private MenuItem mItemSwitchCamera = null;
 
     private boolean circleFlag = false;
@@ -74,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         setContentView(R.layout.activity_main);
 
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.tutorial1_activity_java_surface_view);
+
+        mOpenCvCameraView.setMaxFrameSize(848, 480);
 
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
 
@@ -120,6 +122,9 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             Mat col = inputFrame.rgba();
             Mat ids = new Mat();
             Mat testing = new Mat();
+
+            col.copyTo(testing);
+
             List<Mat> corners = new ArrayList<>();
 
             // Crashes here
@@ -127,16 +132,12 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
             col.copyTo(testing);
 
-            Size szSource = new Size(640,480);
-            Size szFin = new Size(720,1280);
+            //Size szSource = new Size(640,480);
+            //Size szFin = new Size(720,1280);
 
-            Imgproc.resize(testing, testing, szSource, 0, 0, Imgproc.INTER_CUBIC);
+            long addr1 = col.getNativeObjAddr(), addr2 = testing.getNativeObjAddr();
 
-            long addr = testing.getNativeObjAddr();
-
-            detectMarkers(addr);
-
-            Imgproc.resize(testing, testing, szFin, 0, 0, Imgproc.INTER_CUBIC);
+            detectMarkers(addr1, addr2);
 
             return col;
 
@@ -160,5 +161,5 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
      * which is packaged with this application.
      */
     public native String stringFromJNI();
-    public native void detectMarkers(long image_nativeObj);
+    public native void detectMarkers(long image_final,long image_editable);
 }
