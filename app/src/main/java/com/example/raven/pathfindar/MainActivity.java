@@ -24,20 +24,22 @@ import android.view.MenuItem;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-
-// http://ibuzzlog.blogspot.ca/2012/08/how-to-do-real-time-image-processing-in.html
 
 public class MainActivity extends AppCompatActivity implements CvCameraViewListener2 {
     private static final String TAG = "OCVSample::Activity";
 
     private CameraBridgeViewBase mOpenCvCameraView;
-    private boolean              mIsJavaCamera = true;
+    private boolean mIsJavaCamera = true;
     private MenuItem mItemSwitchCamera = null;
 
     private boolean circleFlag = false;
+
+    private long x = 10, y = 10;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -76,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.tutorial1_activity_java_surface_view);
 
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
+        mOpenCvCameraView.setMaxFrameSize(848, 480);
 
         mOpenCvCameraView.setCvCameraViewListener(this);
     }
@@ -118,25 +121,21 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         if (circleFlag){
 
             Mat col = inputFrame.rgba();
-            Mat ids = new Mat();
-            Mat testing = new Mat();
+            Mat secondary = new Mat();
+
+            col.copyTo(secondary);
+
             List<Mat> corners = new ArrayList<>();
 
             // Crashes here
             //Dictionary dict = Aruco.getPredefinedDictionary(Aruco.DICT_6X6_250);
 
-            col.copyTo(testing);
+            //Size szSource = new Size(640,480);
+            //Size szFin = new Size(720,1280);
 
-            Size szSource = new Size(640,480);
-            Size szFin = new Size(720,1280);
+            long addr1 = col.getNativeObjAddr(), addr2 = secondary.getNativeObjAddr();
 
-            Imgproc.resize(testing, testing, szSource, 0, 0, Imgproc.INTER_CUBIC);
-
-            long addr = testing.getNativeObjAddr();
-
-            detectMarkers(addr);
-
-            Imgproc.resize(testing, testing, szFin, 0, 0, Imgproc.INTER_CUBIC);
+            detectMarkers(addr1, addr2);
 
             return col;
 
@@ -146,19 +145,63 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
     }
 
-    public void drawCircle(View view) {
+    public void toggleTracking(View view) {
         if (circleFlag){
             circleFlag = false;
         } else {
             circleFlag = true;
+            init();
         }
     }
 
+    public void openGridMenu(View view) {
+        mOpenCvCameraView.disableView();
+        setContentView(R.layout.grid_edit_menu);
 
-    /**
-     * A native method that is implemented by the 'native-lib' native library,
-     * which is packaged with this application.
-     */
-    public native String stringFromJNI();
-    public native void detectMarkers(long image_nativeObj);
+        TextView yLabel = (TextView) findViewById(R.id.tv_numV);
+        yLabel.setText(Long.toString(y));
+
+        TextView xLabel = (TextView) findViewById(R.id.tv_numH);
+        xLabel.setText(Long.toString(x));
+    }
+
+    public void closeGridMenu(View view) {
+        setContentView(R.layout.activity_main);
+
+        adjustGridDimensions(x,y);
+
+        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.tutorial1_activity_java_surface_view);
+        mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
+        mOpenCvCameraView.setCvCameraViewListener(this);
+        mOpenCvCameraView.enableView();
+    }
+
+    public void incrementVert(View view) {
+        y++;
+        TextView yLabel = (TextView) findViewById(R.id.tv_numV);
+        yLabel.setText(Long.toString(y));
+    }
+
+    public void decrementVert(View view) {
+        y--;
+        TextView yLabel = (TextView) findViewById(R.id.tv_numV);
+        yLabel.setText(Long.toString(y));
+    }
+
+    public void incrementHoriz(View view) {
+        x++;
+        TextView xLabel = (TextView) findViewById(R.id.tv_numH);
+        xLabel.setText(Long.toString(x));
+    }
+
+    public void decrementHoriz(View view) {
+        x--;
+        TextView xLabel = (TextView) findViewById(R.id.tv_numH);
+        xLabel.setText(Long.toString(x));
+    }
+
+    public native void detectMarkers(long image_final,long image_editable);
+    public native void adjustGridDimensions(long x,long y);
+    public native void init();
+
 }

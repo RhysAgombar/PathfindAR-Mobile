@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tv_gridAdjust"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:textSize="20dp"
+        android:text="@string/grid_dimensions"
+        android:textStyle="bold"/>
+
+    <View
+        android:id="@+id/centerColumn"
+        android:layout_height="0dp"
+        android:layout_width="0dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/tv_gridAdjust"
+        />
+
+    <TextView
+        android:id="@+id/tv_hlines_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_gridAdjust"
+        android:layout_toLeftOf="@id/centerColumn"
+        android:paddingRight="90dp"
+        android:text="X:"/>
+
+
+    <TextView
+        android:id="@+id/tv_vlines_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_gridAdjust"
+        android:layout_toRightOf="@id/centerColumn"
+        android:paddingLeft="90dp"
+        android:text="Y:" />
+
+    <RelativeLayout
+        android:id="@+id/layt_HorizCounter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@id/centerColumn"
+        android:layout_below="@id/tv_hlines_label"
+        android:paddingRight="50dp">
+
+        <Button
+            android:id="@+id/bt_minusH"
+            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_alignParentStart="true"
+            android:text="@string/minus"
+            android:onClick="decrementHoriz"/>
+
+        <TextView
+            android:id="@+id/tv_numH"
+            android:layout_height="wrap_content"
+            android:layout_width="36dp"
+            android:layout_alignBaseline="@+id/bt_minusH"
+            android:layout_alignBottom="@+id/bt_minusH"
+            android:layout_toEndOf="@+id/bt_minusH"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:text="@string/_10"/>
+
+        <Button
+            android:id="@+id/bt_plusH"
+            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_alignTop="@id/bt_minusH"
+            android:layout_alignBottom="@+id/bt_minusH"
+            android:layout_toEndOf="@+id/tv_numH"
+            android:text="@string/plus"
+            android:onClick="incrementHoriz"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layt_VertCounter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_hlines_label"
+        android:layout_toEndOf="@id/centerColumn"
+        android:paddingLeft="50dp">
+
+        <Button
+            android:id="@+id/bt_minusV"
+            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_alignParentStart="true"
+            android:text="@string/minus"
+            android:onClick="decrementVert"/>
+
+        <TextView
+            android:id="@+id/tv_numV"
+            android:layout_height="wrap_content"
+            android:layout_width="36dp"
+            android:layout_alignBaseline="@+id/bt_minusV"
+            android:layout_alignBottom="@+id/bt_minusV"
+            android:layout_toEndOf="@+id/bt_minusV"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:text="@string/_10"/>
+
+        <Button
+            android:id="@+id/bt_plusV"
+            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_alignTop="@id/bt_minusV"
+            android:layout_alignBottom="@+id/bt_minusV"
+            android:layout_toEndOf="@+id/tv_numV"
+            android:text="@string/plus"
+            android:onClick="incrementVert"/>
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/btn_back"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="Back"
+        android:onClick="closeGridMenu"/>
+
+</RelativeLayout>
