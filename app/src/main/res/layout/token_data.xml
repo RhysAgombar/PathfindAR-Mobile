@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants">
+
+    <ImageView
+        android:id="@+id/iv_tokenColour"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_width="20dp"
+        android:layout_height="90dp"
+        android:background="@color/colorPrimary"/>
+
+    <TextView
+        android:id="@+id/tv_tokenName"
+        android:layout_height="wrap_content"
+        android:layout_width="230dp"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/iv_tokenColour"
+        android:paddingLeft="10dp"
+        android:ellipsize="end"
+        android:textStyle="bold"
+        android:textSize="18dp"
+        android:text="Token Name" />
+
+    <TextView
+        android:id="@+id/tv_movementLabel"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_tokenName"
+        android:layout_toRightOf="@id/iv_tokenColour"
+        android:paddingLeft="10dp"
+        android:textStyle="bold"
+        android:text="Move:"/>
+
+    <TextView
+        android:id="@+id/tv_movement"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_tokenName"
+        android:layout_toRightOf="@id/tv_movementLabel"
+        android:paddingLeft="5dp"
+        android:text="3000ft"/>
+
+    <TextView
+        android:id="@+id/tv_rangeLabel"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_movement"
+        android:layout_toRightOf="@id/iv_tokenColour"
+        android:paddingLeft="10dp"
+        android:textStyle="bold"
+        android:text="Ranges:"/>
+
+    <TextView
+        android:id="@+id/tv_range1"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_rangeLabel"
+        android:layout_toRightOf="@id/iv_tokenColour"
+        android:paddingLeft="10dp"
+        android:text="Halberd and Shield 1:"/>
+
+    <TextView
+        android:id="@+id/tv_range2"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_range1"
+        android:layout_toRightOf="@id/iv_tokenColour"
+        android:paddingLeft="10dp"
+        android:text="Halberd and Shield 2:"/>
+
+    <TextView
+        android:id="@+id/tv_position"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_tokenName"
+        android:layout_toLeftOf="@id/bt_editToken"
+        android:paddingLeft="5dp"
+        android:text="(100, 100)"/>
+
+    <TextView
+        android:id="@+id/tv_positionLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_tokenName"
+        android:layout_toLeftOf="@id/tv_position"
+        android:textStyle="bold"
+        android:text="Position:"/>
+
+    <Button
+        android:id="@+id/bt_editToken"
+        android:layout_width="60dp"
+        android:layout_height="90dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:text="Edit"/>
+
+
+</RelativeLayout>

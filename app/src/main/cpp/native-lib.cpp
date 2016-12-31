@@ -14,6 +14,14 @@
 #include <string.h>
 #include <time.h>
 
+template <typename T>
+std::string to_string(T value)
+{
+    std::ostringstream os ;
+    os << value ;
+    return os.str() ;
+}
+
 int hSize = 3;
 int vSize = 3;
 int** gridCount; //gridCount[11][11];
@@ -64,19 +72,32 @@ cv::Point **vLines;
 arMarker arUco[4];
 bool start;
 
-
 // Token Variables
 class Token {
 public:
-    int id;
-    std::string name;
-    cv::Point location;
-    int mRange;
-    int mRemain;
-    int aRange;
-    int lifespan;
+    int id = 0;
+    std::string name = "";
+    cv::Point location = cv::Point(0.0,0.0);
+    int mRange = 0;
+    //int mRemain;
+    int aRange = 0;
+    int lifespan = 0;
     bool found = false;
-    cv::Scalar colour;
+    cv::Scalar colour = cv::Scalar(0,0,0);
+
+    std::string toString() {
+        std::string out = to_string(id) + "¦";
+        out = out.append(name + "¦");
+        out = out.append(to_string(location.x) + "¦");
+        out = out.append(to_string(location.y) + "¦");
+        out = out.append(to_string(mRange) + "¦");
+        out = out.append(to_string(aRange) + "¦");
+        out = out.append(to_string(lifespan) + "¦");
+        out = out.append(to_string(found) + "¦");
+        out = out.append(to_string(colour.val[0]) + "," + to_string(colour.val[1]) + "," + to_string(colour.val[2]) + "," + to_string(colour.val[3]) + "│");
+
+        return out;
+    }
 };
 
 int idGen = 0;
@@ -330,7 +351,7 @@ void idTokens() {
             newToken.location = uTokens.at(k);
             newToken.lifespan = 1;
             newToken.id = idGen++;
-            newToken.name = idGen;
+            newToken.name = to_string(idGen);
             newToken.found = true;
 
             newToken.colour = cv::Scalar(rand() % 255, rand() % 255, rand() % 255);
@@ -646,6 +667,30 @@ Java_com_example_raven_pathfindar_MainActivity_adjustGridDimensions(JNIEnv *env,
     hSize = x;
 
     init();
+}
+
+extern "C"
+void
+Java_com_example_raven_pathfindar_MainActivity_setTokenList(JNIEnv *env, jobject instance, jlong x, jlong y) {
+
+
+
+}
+
+extern "C"
+JNIEXPORT jstring JNICALL Java_com_example_raven_pathfindar_MainActivity_getTokenList(JNIEnv *env, jobject obj) {
+
+    std::string out = "";
+
+    for (int i = 0; i < tokenVec.size(); i++){
+        out = out.append(tokenVec.at(i).toString());
+    }
+
+    jstring result;
+
+    puts(out.c_str());
+    result = (*env).NewStringUTF(out.c_str());
+    return result;
 }
 
 extern "C"

@@ -38,8 +38,9 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     private MenuItem mItemSwitchCamera = null;
 
     private boolean circleFlag = false;
-
     private long x = 10, y = 10;
+
+    private List tokenList = new ArrayList();
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -165,6 +166,39 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         xLabel.setText(Long.toString(x));
     }
 
+    public void openTokenMenu(View view) {
+
+        String test = getTokenList();
+        tokenList.clear();
+
+        for (String token:  test.split("│")) {
+
+            Token nTok = new Token();
+            String[] tokPieces = token.split("¦");
+            String[] colours = tokPieces[8].split(",");
+
+            nTok.id = Integer.parseInt(tokPieces[0]);
+            nTok.name = tokPieces[1];
+            nTok.location.x = Double.parseDouble(tokPieces[2]);
+            nTok.location.y = Double.parseDouble(tokPieces[3]);
+            nTok.mRange = Integer.parseInt(tokPieces[4]);
+            nTok.aRange = Integer.parseInt(tokPieces[5]);
+            nTok.lifespan = Integer.parseInt(tokPieces[6]);
+
+            if (tokPieces[7].equals("0")){
+                nTok.found = false;
+            } else {
+                nTok.found = true;
+            }
+
+            //nTok.found = Boolean.parseBoolean(tokPieces[7]);
+            nTok.colour = new Scalar(Double.parseDouble(colours[0]),Double.parseDouble(colours[1]),Double.parseDouble(colours[2]),Double.parseDouble(colours[3]));
+
+            tokenList.add(nTok);
+        }
+
+    }
+
     public void closeGridMenu(View view) {
         setContentView(R.layout.activity_main);
 
@@ -175,6 +209,8 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         mOpenCvCameraView.setCvCameraViewListener(this);
         mOpenCvCameraView.enableView();
     }
+
+
 
     public void incrementVert(View view) {
         y++;
@@ -200,8 +236,12 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         xLabel.setText(Long.toString(x));
     }
 
+
+
     public native void detectMarkers(long image_final,long image_editable);
     public native void adjustGridDimensions(long x,long y);
+    public native String getTokenList();
+    public native void setTokenList();
     public native void init();
 
 }
