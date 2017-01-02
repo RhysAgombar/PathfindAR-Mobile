@@ -119,11 +119,19 @@
     </RelativeLayout>
 
     <Button
-        android:id="@+id/btn_back"
+        android:id="@+id/bt_backGrid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:text="Back"
         android:onClick="closeGridMenu"/>
+
+    <Button
+        android:id="@+id/bt_saveGrid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+    android:layout_above="@id/bt_backGrid"
+        android:text="Save"
+        android:onClick="saveGrid"/>
 
 </RelativeLayout>

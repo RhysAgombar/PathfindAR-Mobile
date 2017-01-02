@@ -662,7 +662,7 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
 
 extern "C"
 void
-Java_com_example_raven_pathfindar_MainActivity_adjustGridDimensions(JNIEnv *env, jobject instance, jlong x, jlong y) {
+Java_com_example_raven_pathfindar_MainActivity_adjustGridDimensions(JNIEnv *env, jobject instance, jint x, jint y) {
     vSize = y;
     hSize = x;
 

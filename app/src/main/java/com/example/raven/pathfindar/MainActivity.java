@@ -17,6 +17,7 @@ import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -37,10 +38,13 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     private boolean mIsJavaCamera = true;
     private MenuItem mItemSwitchCamera = null;
 
-    private boolean circleFlag = false;
-    private long x = 10, y = 10;
+    public static final int REQUEST_GRID_MENU = 1;
+    public static final int REQUEST_TOKEN_MENU = 2;
 
-    private List tokenList = new ArrayList();
+    private boolean circleFlag = false;
+    private int x = 10, y = 10;
+
+    private static ArrayList<Token> tokenList = new ArrayList();
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -80,8 +84,8 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setMaxFrameSize(848, 480);
-
         mOpenCvCameraView.setCvCameraViewListener(this);
+        mOpenCvCameraView.enableView();
     }
 
     @Override
@@ -147,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     }
 
     public void toggleTracking(View view) {
+
         if (circleFlag){
             circleFlag = false;
         } else {
@@ -157,21 +162,42 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
     public void openGridMenu(View view) {
         mOpenCvCameraView.disableView();
-        setContentView(R.layout.grid_edit_menu);
 
-        TextView yLabel = (TextView) findViewById(R.id.tv_numV);
-        yLabel.setText(Long.toString(y));
+        Intent intent = new Intent(this, gridMenu.class);
 
-        TextView xLabel = (TextView) findViewById(R.id.tv_numH);
-        xLabel.setText(Long.toString(x));
+        intent.putExtra("x", x);
+        intent.putExtra("y", y);
+
+        startActivityForResult(intent, REQUEST_GRID_MENU);
+
+
+
+        //setContentView(R.layout.grid_edit_menu);
+
+        //TextView yLabel = (TextView) findViewById(R.id.tv_numV);
+        //yLabel.setText(Long.toString(y));
+
+        //TextView xLabel = (TextView) findViewById(R.id.tv_numH);
+        //xLabel.setText(Long.toString(x));
     }
 
     public void openTokenMenu(View view) {
 
-        String test = getTokenList();
-        tokenList.clear();
+        tokenList = getFormattedTokenList(tokenList);
 
-        for (String token:  test.split("│")) {
+        tokenMenu.tokenList = tokenList;
+        Intent intent = new Intent(this, tokenMenu.class);
+
+        startActivity(intent);
+
+    }
+
+    public ArrayList<Token> getFormattedTokenList(ArrayList<Token> tl) {
+        tl.clear();
+
+        String tokListString = getTokenList();
+
+        for (String token:  tokListString.split("│")) {
 
             Token nTok = new Token();
             String[] tokPieces = token.split("¦");
@@ -191,55 +217,38 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
                 nTok.found = true;
             }
 
-            //nTok.found = Boolean.parseBoolean(tokPieces[7]);
+            nTok.found = Boolean.parseBoolean(tokPieces[7]);
             nTok.colour = new Scalar(Double.parseDouble(colours[0]),Double.parseDouble(colours[1]),Double.parseDouble(colours[2]),Double.parseDouble(colours[3]));
 
-            tokenList.add(nTok);
+            tl.add(nTok);
+        }
+
+        return tl;
+
+    }
+
+    public void onActivityResult(int req, int res, Intent in){
+        setContentView(R.layout.activity_main);
+
+        if (req == REQUEST_GRID_MENU){
+
+            if (in.getBooleanExtra("saved", false)){
+                x = in.getIntExtra("x",10);
+                y = in.getIntExtra("y",10);
+
+                adjustGridDimensions(x,y);
+            }
+
+            mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.tutorial1_activity_java_surface_view);
+            mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
+            mOpenCvCameraView.setCvCameraViewListener(this);
+            mOpenCvCameraView.enableView();
         }
 
     }
 
-    public void closeGridMenu(View view) {
-        setContentView(R.layout.activity_main);
-
-        adjustGridDimensions(x,y);
-
-        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.tutorial1_activity_java_surface_view);
-        mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
-        mOpenCvCameraView.setCvCameraViewListener(this);
-        mOpenCvCameraView.enableView();
-    }
-
-
-
-    public void incrementVert(View view) {
-        y++;
-        TextView yLabel = (TextView) findViewById(R.id.tv_numV);
-        yLabel.setText(Long.toString(y));
-    }
-
-    public void decrementVert(View view) {
-        y--;
-        TextView yLabel = (TextView) findViewById(R.id.tv_numV);
-        yLabel.setText(Long.toString(y));
-    }
-
-    public void incrementHoriz(View view) {
-        x++;
-        TextView xLabel = (TextView) findViewById(R.id.tv_numH);
-        xLabel.setText(Long.toString(x));
-    }
-
-    public void decrementHoriz(View view) {
-        x--;
-        TextView xLabel = (TextView) findViewById(R.id.tv_numH);
-        xLabel.setText(Long.toString(x));
-    }
-
-
-
     public native void detectMarkers(long image_final,long image_editable);
-    public native void adjustGridDimensions(long x,long y);
+    public native void adjustGridDimensions(int x,int y);
     public native String getTokenList();
     public native void setTokenList();
     public native void init();
