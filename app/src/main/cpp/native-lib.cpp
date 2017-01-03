@@ -22,6 +22,16 @@ std::string to_string(T value)
     return os.str() ;
 }
 
+std::string to_stringB(bool value)
+{
+    if (value) {
+        return "1";
+    } else {
+        return "0";
+    }
+
+}
+
 int hSize = 3;
 int vSize = 3;
 int** gridCount; //gridCount[11][11];
@@ -72,6 +82,14 @@ cv::Point **vLines;
 arMarker arUco[4];
 bool start;
 
+class Weapon {
+public:
+    std::string name = "";
+    int range = 5;
+    bool reach = false;
+    bool ranged = false;
+};
+
 // Token Variables
 class Token {
 public:
@@ -80,10 +98,10 @@ public:
     cv::Point location = cv::Point(0.0,0.0);
     int mRange = 0;
     //int mRemain;
-    int aRange = 0;
     int lifespan = 0;
     bool found = false;
     cv::Scalar colour = cv::Scalar(0,0,0);
+    Weapon w1, w2, w3, w4;
 
     std::string toString() {
         std::string out = to_string(id) + "¦";
@@ -91,9 +109,24 @@ public:
         out = out.append(to_string(location.x) + "¦");
         out = out.append(to_string(location.y) + "¦");
         out = out.append(to_string(mRange) + "¦");
-        out = out.append(to_string(aRange) + "¦");
         out = out.append(to_string(lifespan) + "¦");
         out = out.append(to_string(found) + "¦");
+        out = out.append(w1.name + "¦");
+        out = out.append(to_string(w1.range) + "¦");
+        out = out.append(to_string(w1.reach) + "¦");
+        out = out.append(to_string(w1.ranged) + "¦");
+        out = out.append(w2.name + "¦");
+        out = out.append(to_string(w2.range) + "¦");
+        out = out.append(to_string(w2.reach) + "¦");
+        out = out.append(to_string(w2.ranged) + "¦");
+        out = out.append(w3.name + "¦");
+        out = out.append(to_string(w3.range) + "¦");
+        out = out.append(to_string(w3.reach) + "¦");
+        out = out.append(to_string(w3.ranged) + "¦");
+        out = out.append(w4.name + "¦");
+        out = out.append(to_string(w4.range) + "¦");
+        out = out.append(to_string(w4.reach) + "¦");
+        out = out.append(to_string(w4.ranged) + "¦");
         out = out.append(to_string(colour.val[0]) + "," + to_string(colour.val[1]) + "," + to_string(colour.val[2]) + "," + to_string(colour.val[3]) + "│");
 
         return out;

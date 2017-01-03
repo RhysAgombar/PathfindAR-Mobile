@@ -1,11 +1,13 @@
 package com.example.raven.pathfindar;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -50,20 +52,46 @@ public class tokenAdapter extends BaseAdapter {
         }
 
         TextView tvName = (TextView)convertView.findViewById(R.id.tv_tokenName);
-        tvName.setText(data.get(position).name);
+        tvName.setText(tokenToDisplay.name);
 
         TextView tvMove = (TextView)convertView.findViewById(R.id.tv_movement);
-        tvMove.setText(Integer.toString(data.get(position).mRange) + "ft.");
+        tvMove.setText(Integer.toString(tokenToDisplay.mRange) + "ft.");
 
         TextView tvPosition = (TextView)convertView.findViewById(R.id.tv_position);
-        tvPosition.setText("(" + Integer.toString((int)data.get(position).location.x) + "," + Integer.toString((int)data.get(position).location.y) + ")");
+        tvPosition.setText("(" + Integer.toString((int)tokenToDisplay.location.x) + "," + Integer.toString((int)tokenToDisplay.location.y) + ")");
 
         TextView tvARange1 = (TextView)convertView.findViewById(R.id.tv_range1);
-        tvARange1.setText(Integer.toString(data.get(position).aRange) + "ft.");
+        tvARange1.setText(tokenToDisplay.w1.toString());
+
+        TextView tvARange2 = (TextView)convertView.findViewById(R.id.tv_range2);
+        tvARange2.setText(tokenToDisplay.w2.toString());
+
+        TextView tvARange3 = (TextView)convertView.findViewById(R.id.tv_range3);
+        tvARange3.setText(tokenToDisplay.w3.toString());
+
+        TextView tvARange4 = (TextView)convertView.findViewById(R.id.tv_range4);
+        tvARange4.setText(tokenToDisplay.w4.toString());
+
+        TextView tvFound = (TextView)convertView.findViewById(R.id.tv_found);
+        if (tokenToDisplay.found){
+            tvFound.setText("True");
+        } else {
+            tvFound.setText("False");
+        }
 
         Color nColour = new Color();
         ImageView ivColour = (ImageView)convertView.findViewById(R.id.iv_tokenColour);
-        ivColour.setBackgroundColor(nColour.rgb((int)data.get(position).colour.val[0], (int)data.get(position).colour.val[1], (int)data.get(position).colour.val[2]));
+        ivColour.setBackgroundColor(nColour.rgb((int)tokenToDisplay.colour.val[0], (int)tokenToDisplay.colour.val[1], (int)tokenToDisplay.colour.val[2]));
+
+        final Button editButton = (Button)convertView.findViewById(R.id.bt_editToken);
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, tokenEditMenu.class);
+                intent.putExtra("pos", position);
+                context.startActivity(intent);
+            }
+        });
 
         return convertView;
     }

@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tv_editTokenName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Token Name:"/>
+
+    <View
+        android:id="@+id/v_EditTokenCenterView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_centerHorizontal="true"
+        />
+
+    <EditText
+        android:id="@+id/et_editTokenName"
+        android:layout_toLeftOf="@id/v_EditTokenCenterView"
+        android:layout_below="@id/tv_editTokenName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tv_editTokenMovement"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/v_EditTokenCenterView"
+        android:text="Token Movement Range:"/>
+
+    <RelativeLayout
+        android:id="@+id/layt_movementRange"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/v_EditTokenCenterView"
+        android:layout_below="@id/tv_editTokenMovement">
+
+        <Button
+            android:id="@+id/bt_minusMR"
+            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_alignParentStart="true"
+            android:text="@string/minus"
+            android:onClick="decrementMovement"/>
+
+        <TextView
+            android:id="@+id/tv_numMR"
+            android:layout_height="wrap_content"
+            android:layout_width="36dp"
+            android:layout_alignBaseline="@+id/bt_minusMR"
+            android:layout_alignBottom="@+id/bt_minusMR"
+            android:layout_toEndOf="@+id/bt_minusMR"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:text="@string/_10"/>
+
+        <Button
+            android:id="@+id/bt_plusMR"
+            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_alignTop="@id/bt_minusMR"
+            android:layout_alignBottom="@+id/bt_minusMR"
+            android:layout_toEndOf="@+id/tv_numMR"
+            android:text="@string/plus"
+            android:onClick="incrementMovement"/>
+
+    </RelativeLayout>
+
+
+    <TextView
+        android:id="@+id/tv_editWeapon1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/v_EditTokenCenterView"
+        android:layout_below="@id/layt_movementRange"
+        android:text="Weapon 1 Range:"/>
+
+    <RelativeLayout
+        android:id="@+id/layt_weapon1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/v_EditTokenCenterView"
+        android:layout_below="@id/tv_editWeapon1">
+
+        <Button
+            android:id="@+id/bt_minusW1"
+            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_alignParentStart="true"
+            android:text="@string/minus"
+            android:onClick="decrementRange1"/>
+
+        <TextView
+            android:id="@+id/tv_numW1"
+            android:layout_height="wrap_content"
+            android:layout_width="36dp"
+            android:layout_alignBaseline="@+id/bt_minusW1"
+            android:layout_alignBottom="@+id/bt_minusW1"
+            android:layout_toEndOf="@+id/bt_minusW1"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:text="@string/_5"/>
+
+        <Button
+            android:id="@+id/bt_plusW1"
+            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_alignTop="@id/bt_minusW1"
+            android:layout_alignBottom="@+id/bt_minusW1"
+            android:layout_toEndOf="@+id/tv_numW1"
+            android:text="@string/plus"
+            android:onClick="incrementRange1"/>
+
+        <CheckBox
+            android:id="@+id/cb_reach1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/bt_plusW1"
+            android:paddingRight="10dp"
+            android:text="Reach"/>
+
+        <CheckBox
+            android:id="@+id/cb_ranged1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/cb_reach1"
+            android:paddingRight="10dp"
+            android:text="Ranged"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_editW1Name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/layt_weapon1"
+        android:text="Weapon 1 Name:"/>
+
+    <EditText
+        android:id="@+id/et_editW1Name"
+        android:layout_below="@id/tv_editW1Name"
+        android:layout_toLeftOf="@id/v_EditTokenCenterView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+    <TextView
+        android:id="@+id/tv_editWeapon2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/v_EditTokenCenterView"
+        android:layout_below="@id/layt_weapon1"
+        android:text="Weapon 2 Range:"/>
+
+    <RelativeLayout
+        android:id="@+id/layt_weapon2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/v_EditTokenCenterView"
+        android:layout_below="@id/tv_editWeapon2">
+
+        <Button
+            android:id="@+id/bt_minusW2"
+            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_alignParentStart="true"
+            android:text="@string/minus"
+            android:onClick="decrementRange2"/>
+
+        <TextView
+            android:id="@+id/tv_numW2"
+            android:layout_height="wrap_content"
+            android:layout_width="36dp"
+            android:layout_alignBaseline="@+id/bt_minusW2"
+            android:layout_alignBottom="@+id/bt_minusW2"
+            android:layout_toEndOf="@+id/bt_minusW2"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:text="@string/_5"/>
+
+        <Button
+            android:id="@+id/bt_plusW2"
+            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_alignTop="@id/bt_minusW2"
+            android:layout_alignBottom="@+id/bt_minusW2"
+            android:layout_toEndOf="@+id/tv_numW2"
+            android:text="@string/plus"
+            android:onClick="incrementRange2"/>
+
+        <CheckBox
+            android:id="@+id/cb_reach2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/bt_plusW2"
+            android:paddingRight="10dp"
+            android:text="Reach"/>
+
+        <CheckBox
+            android:id="@+id/cb_ranged2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/cb_reach2"
+            android:paddingRight="10dp"
+            android:text="Ranged"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_editW2Name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/layt_weapon2"
+        android:text="Weapon 2 Name:"/>
+
+    <EditText
+        android:id="@+id/et_editW2Name"
+        android:layout_below="@id/tv_editW2Name"
+        android:layout_toLeftOf="@id/v_EditTokenCenterView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tv_editWeapon3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/v_EditTokenCenterView"
+        android:layout_below="@id/layt_weapon2"
+        android:text="Weapon 3 Range:"/>
+
+    <RelativeLayout
+        android:id="@+id/layt_weapon3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/v_EditTokenCenterView"
+        android:layout_below="@id/tv_editWeapon3">
+
+        <Button
+            android:id="@+id/bt_minusW3"
+            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_alignParentStart="true"
+            android:text="@string/minus"
+            android:onClick="decrementRange3"/>
+
+        <TextView
+            android:id="@+id/tv_numW3"
+            android:layout_height="wrap_content"
+            android:layout_width="36dp"
+            android:layout_alignBaseline="@+id/bt_minusW3"
+            android:layout_alignBottom="@+id/bt_minusW3"
+            android:layout_toEndOf="@+id/bt_minusW3"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:text="@string/_5"/>
+
+        <Button
+            android:id="@+id/bt_plusW3"
+            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_alignTop="@id/bt_minusW3"
+            android:layout_alignBottom="@+id/bt_minusW3"
+            android:layout_toEndOf="@+id/tv_numW3"
+            android:text="@string/plus"
+            android:onClick="incrementRange3"/>
+
+        <CheckBox
+            android:id="@+id/cb_reach3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/bt_plusW3"
+            android:paddingRight="10dp"
+            android:text="Reach"/>
+
+        <CheckBox
+            android:id="@+id/cb_ranged3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/cb_reach3"
+            android:paddingRight="10dp"
+            android:text="Ranged"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_editW3Name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/layt_weapon3"
+        android:text="Weapon 3 Name:"/>
+
+    <EditText
+        android:id="@+id/et_editW3Name"
+        android:layout_below="@id/tv_editW3Name"
+        android:layout_toLeftOf="@id/v_EditTokenCenterView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tv_editWeapon4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/v_EditTokenCenterView"
+        android:layout_below="@id/layt_weapon3"
+        android:text="Weapon 4 Range:"/>
+
+    <RelativeLayout
+        android:id="@+id/layt_weapon4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/v_EditTokenCenterView"
+        android:layout_below="@id/tv_editWeapon4">
+
+        <Button
+            android:id="@+id/bt_minusW4"
+            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_alignParentStart="true"
+            android:text="@string/minus"
+            android:onClick="decrementRange4"/>
+
+        <TextView
+            android:id="@+id/tv_numW4"
+            android:layout_height="wrap_content"
+            android:layout_width="36dp"
+            android:layout_alignBaseline="@+id/bt_minusW4"
+            android:layout_alignBottom="@+id/bt_minusW4"
+            android:layout_toEndOf="@+id/bt_minusW4"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:text="@string/_5"/>
+
+        <Button
+            android:id="@+id/bt_plusW4"
+            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_alignTop="@id/bt_minusW4"
+            android:layout_alignBottom="@+id/bt_minusW4"
+            android:layout_toEndOf="@+id/tv_numW4"
+            android:text="@string/plus"
+            android:onClick="incrementRange4"/>
+
+        <CheckBox
+            android:id="@+id/cb_reach4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/bt_plusW4"
+            android:paddingRight="10dp"
+            android:text="Reach"/>
+
+        <CheckBox
+            android:id="@+id/cb_ranged4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/cb_reach4"
+            android:paddingRight="10dp"
+            android:text="Ranged"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_editW4Name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/layt_weapon4"
+        android:text="Weapon 4 Name:"/>
+
+    <EditText
+        android:id="@+id/et_editW4Name"
+        android:layout_below="@id/tv_editW4Name"
+        android:layout_toLeftOf="@id/v_EditTokenCenterView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/bt_editTokeBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="Save"/>
+
+    <Button
+        android:id="@+id/bt_editTokenSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="Save"/>
+
+    <Button
+        android:id="@+id/bt_editTokenLoad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/bt_editTokenSave"
+        android:layout_alignParentBottom="true"
+        android:text="Load"/>
+
+    <Button
+        android:id="@+id/bt_editTokenBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="Back"
+        android:onClick="closeTokenEdit"/>
+
+
+</RelativeLayout>

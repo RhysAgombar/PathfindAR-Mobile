@@ -26,9 +26,12 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".gridMenu"></activity>
-        <activity android:name=".tokenMenu"></activity>
-
+        <activity android:name=".gridMenu"
+                  android:screenOrientation="landscape"/>
+        <activity android:name=".tokenMenu"
+                  android:screenOrientation="landscape"/>
+        <activity android:name=".tokenEditMenu"
+            android:screenOrientation="landscape"/>
     </application>
 
 </manifest>

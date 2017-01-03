@@ -182,14 +182,14 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     }
 
     public void openTokenMenu(View view) {
-
+        mOpenCvCameraView.disableView();
         tokenList = getFormattedTokenList(tokenList);
 
         tokenMenu.tokenList = tokenList;
+        tokenEditMenu.tokenList = tokenList;
         Intent intent = new Intent(this, tokenMenu.class);
 
         startActivity(intent);
-
     }
 
     public ArrayList<Token> getFormattedTokenList(ArrayList<Token> tl) {
@@ -201,23 +201,78 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
             Token nTok = new Token();
             String[] tokPieces = token.split("¦");
-            String[] colours = tokPieces[8].split(",");
+            String[] colours = tokPieces[23].split(",");
 
             nTok.id = Integer.parseInt(tokPieces[0]);
             nTok.name = tokPieces[1];
             nTok.location.x = Double.parseDouble(tokPieces[2]);
             nTok.location.y = Double.parseDouble(tokPieces[3]);
             nTok.mRange = Integer.parseInt(tokPieces[4]);
-            nTok.aRange = Integer.parseInt(tokPieces[5]);
-            nTok.lifespan = Integer.parseInt(tokPieces[6]);
+            nTok.lifespan = Integer.parseInt(tokPieces[5]);
 
-            if (tokPieces[7].equals("0")){
+            if (tokPieces[6].equals("0")){
                 nTok.found = false;
             } else {
                 nTok.found = true;
             }
 
-            nTok.found = Boolean.parseBoolean(tokPieces[7]);
+            nTok.w1 = new Weapon (tokPieces[7], Integer.parseInt(tokPieces[8]));
+
+            if (tokPieces[9].equals("0")){
+                nTok.w1.reach = false;
+            } else {
+                nTok.w1.reach = true;
+            }
+
+            if (tokPieces[10].equals("0")){
+                nTok.w1.ranged = false;
+            } else {
+                nTok.w1.ranged = true;
+            }
+
+            nTok.w2 = new Weapon (tokPieces[11], Integer.parseInt(tokPieces[12]));
+
+            if (tokPieces[13].equals("0")){
+                nTok.w2.reach = false;
+            } else {
+                nTok.w2.reach = true;
+            }
+
+            if (tokPieces[14].equals("0")){
+                nTok.w2.ranged = false;
+            } else {
+                nTok.w2.ranged = true;
+            }
+
+            nTok.w3 = new Weapon (tokPieces[15], Integer.parseInt(tokPieces[16]));
+
+            if (tokPieces[17].equals("0")){
+                nTok.w3.reach = false;
+            } else {
+                nTok.w3.reach = true;
+            }
+
+            if (tokPieces[18].equals("0")){
+                nTok.w3.ranged = false;
+            } else {
+                nTok.w3.ranged = true;
+            }
+
+            nTok.w4 = new Weapon (tokPieces[19], Integer.parseInt(tokPieces[20]));
+
+            if (tokPieces[21].equals("0")){
+                nTok.w4.reach = false;
+            } else {
+                nTok.w4.reach = true;
+            }
+
+            if (tokPieces[22].equals("0")){
+                nTok.w4.ranged = false;
+            } else {
+                nTok.w4.ranged = true;
+            }
+
+            //nTok.found = Boolean.parseBoolean(tokPieces[6]);
             nTok.colour = new Scalar(Double.parseDouble(colours[0]),Double.parseDouble(colours[1]),Double.parseDouble(colours[2]),Double.parseDouble(colours[3]));
 
             tl.add(nTok);
@@ -239,11 +294,12 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
                 adjustGridDimensions(x,y);
             }
 
-            mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.tutorial1_activity_java_surface_view);
-            mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
-            mOpenCvCameraView.setCvCameraViewListener(this);
-            mOpenCvCameraView.enableView();
         }
+
+        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.tutorial1_activity_java_surface_view);
+        mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
+        mOpenCvCameraView.setCvCameraViewListener(this);
+        mOpenCvCameraView.enableView();
 
     }
 
