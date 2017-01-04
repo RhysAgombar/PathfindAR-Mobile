@@ -58,7 +58,9 @@ public class tokenAdapter extends BaseAdapter {
         tvMove.setText(Integer.toString(tokenToDisplay.mRange) + "ft.");
 
         TextView tvPosition = (TextView)convertView.findViewById(R.id.tv_position);
-        tvPosition.setText("(" + Integer.toString((int)tokenToDisplay.location.x) + "," + Integer.toString((int)tokenToDisplay.location.y) + ")");
+        tvPosition.setText("(" + Integer.toString((int)tokenToDisplay.location.y) + "," + Integer.toString((int)tokenToDisplay.location.x) + ")");
+        // There's an error in my grid with the way it's indexed. the x and y positions are switched.
+        // Makes no difference for the math, though, so unless I have the time to fix it, I'm just going to invert the display.
 
         TextView tvARange1 = (TextView)convertView.findViewById(R.id.tv_range1);
         tvARange1.setText(tokenToDisplay.w1.toString());
