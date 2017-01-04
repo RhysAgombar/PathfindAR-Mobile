@@ -22,16 +22,6 @@ std::string to_string(T value)
     return os.str() ;
 }
 
-std::string to_stringB(bool value)
-{
-    if (value) {
-        return "1";
-    } else {
-        return "0";
-    }
-
-}
-
 int hSize = 20;
 int vSize = 20;
 int** gridCount; //gridCount[11][11];
@@ -126,7 +116,7 @@ void colourRadiusFromSquare(cv::Point pos, int radius, bool reach){
     }
 
     diagonal = holder;
-    while (diagonal >= 0) {
+    while (diagonal > 0) { // >=
         cv::Point current;
         current.x = pos.x - diagonal;
         current.y = pos.y + diagonal;
@@ -937,9 +927,136 @@ Java_com_example_raven_pathfindar_MainActivity_adjustGridDimensions(JNIEnv *env,
     init();
 }
 
+
+
+void split(const std::string &str, char split, std::vector<std::string> &elements) {
+    std::stringstream ss;
+    ss.str(str);
+    std::string item;
+    while (std::getline(ss, item, split)) {
+        elements.push_back(item);
+    }
+}
+
 extern "C"
 void
-Java_com_example_raven_pathfindar_MainActivity_setTokenList(JNIEnv *env, jobject instance, jlong x, jlong y) {
+Java_com_example_raven_pathfindar_MainActivity_setTokenList(JNIEnv *env, jobject instance, jstring inString) {
+
+    const jsize len = env->GetStringUTFLength(inString);
+    const char* strChars = env->GetStringUTFChars(inString, (jboolean *)0);
+
+    std::string procString(strChars, len);
+
+    std::vector<std::string> tokens;
+
+    split(procString, '|', tokens);
+
+    for (int i = 0; i < tokens.size(); i++){
+        std::vector<std::string> tokenPieces;
+        split(tokens.at(i), '@', tokenPieces);
+
+        Token nTok;
+
+        nTok.id = std::atoi(tokenPieces.at(0).c_str());
+        nTok.name = tokenPieces.at(1);
+        nTok.location.x = std::atoi(tokenPieces.at(2).c_str());
+        nTok.location.y = std::atoi(tokenPieces.at(3).c_str());
+        nTok.mRange = std::atoi(tokenPieces.at(4).c_str());
+        nTok.lifespan = std::atoi(tokenPieces.at(5).c_str());
+
+        if (tokenPieces.at(6) == "true") {
+            nTok.found = true;
+        } else {
+            nTok.found = false;
+        }
+
+        std::vector<std::string> colourPieces;
+        split(tokenPieces.at(7), ',', colourPieces);
+
+        cv::Scalar colour = cv::Scalar(std::atoi(colourPieces.at(0).c_str()), std::atoi(colourPieces.at(1).c_str()), std::atoi(colourPieces.at(2).c_str()));
+        nTok.colour = colour;
+
+        nTok.w1.name = tokenPieces.at(8);
+        nTok.w1.range = std::atoi(tokenPieces.at(9).c_str());
+
+        if (tokenPieces.at(10) == "true") {
+            nTok.w1.reach = true;
+        } else {
+            nTok.w1.reach = false;
+        }
+
+        if (tokenPieces.at(11) == "true") {
+            nTok.w1.ranged = true;
+        } else {
+            nTok.w1.ranged = false;
+        }
+
+        nTok.w2.name = tokenPieces.at(12);
+        nTok.w2.range = std::atoi(tokenPieces.at(13).c_str());
+
+        if (tokenPieces.at(14) == "true") {
+            nTok.w2.reach = true;
+        } else {
+            nTok.w2.reach = false;
+        }
+
+        if (tokenPieces.at(15) == "true") {
+            nTok.w2.ranged = true;
+        } else {
+            nTok.w2.ranged = false;
+        }
+
+        nTok.w3.name = tokenPieces.at(16);
+        nTok.w3.range = std::atoi(tokenPieces.at(17).c_str());
+
+        if (tokenPieces.at(18) == "true") {
+            nTok.w3.reach = true;
+        } else {
+            nTok.w3.reach = false;
+        }
+
+        if (tokenPieces.at(19) == "true") {
+            nTok.w3.ranged = true;
+        } else {
+            nTok.w3.ranged = false;
+        }
+
+        nTok.w4.name = tokenPieces.at(20);
+        nTok.w4.range = std::atoi(tokenPieces.at(21).c_str());
+
+        if (tokenPieces.at(22) == "true") {
+            nTok.w4.reach = true;
+        } else {
+            nTok.w4.reach = false;
+        }
+
+        if (tokenPieces.at(23) == "true") {
+            nTok.w4.ranged = true;
+        } else {
+            nTok.w4.ranged = false;
+        }
+
+        for (int j = 0; j < tokenVec.size(); j++){
+            if (tokenVec.at(j).id == nTok.id){
+                tokenVec.at(j) = nTok; // test this
+            }
+        }
+
+        /*
+         *      int id = 0;
+                std::string name = "";
+                cv::Point location = cv::Point(0.0,0.0);
+                int mRange = 0;
+                //int mRemain;
+                int lifespan = 0;
+                bool found = false;
+                cv::Scalar colour = cv::Scalar(0,0,0);
+                Weapon w1, w2, w3, w4;
+         *
+         */
+
+    }
+
 
 
 

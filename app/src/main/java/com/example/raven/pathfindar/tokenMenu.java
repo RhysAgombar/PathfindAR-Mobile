@@ -31,6 +31,9 @@ public class tokenMenu extends MainActivity {
     }
 
     public void closeTokenMenu(View view){
+        Intent resultIntent = new Intent();
+        setResult(this.RESULT_OK, resultIntent);
+
         finish();
     }
 
