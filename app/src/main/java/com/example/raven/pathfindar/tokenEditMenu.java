@@ -6,12 +6,9 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Raven on 02-Jan-17.
@@ -234,34 +231,7 @@ public class tokenEditMenu extends MainActivity{
 
     public void closeTokenEdit(View view) {
         setContentView(R.layout.token_menu);
-
-        tokenMenu.listView.invalidateViews();
-
         finish();
-    }
-
-    public void updateToken(View view) {
-        selectedToken.name = ((EditText)findViewById(R.id.et_editTokenName)).getText().toString();
-
-        selectedToken.w1.name = ((EditText)findViewById(R.id.et_editW1Name)).getText().toString();
-        selectedToken.w2.name = ((EditText)findViewById(R.id.et_editW2Name)).getText().toString();
-        selectedToken.w3.name = ((EditText)findViewById(R.id.et_editW3Name)).getText().toString();
-        selectedToken.w4.name = ((EditText)findViewById(R.id.et_editW4Name)).getText().toString();
-
-        selectedToken.w1.ranged = ((CheckBox)findViewById(R.id.cb_ranged1)).isChecked();
-        selectedToken.w2.ranged = ((CheckBox)findViewById(R.id.cb_ranged2)).isChecked();
-        selectedToken.w3.ranged = ((CheckBox)findViewById(R.id.cb_ranged3)).isChecked();
-        selectedToken.w4.ranged = ((CheckBox)findViewById(R.id.cb_ranged4)).isChecked();
-
-        selectedToken.w1.reach = ((CheckBox)findViewById(R.id.cb_reach1)).isChecked();
-        selectedToken.w2.reach = ((CheckBox)findViewById(R.id.cb_reach2)).isChecked();
-        selectedToken.w3.reach = ((CheckBox)findViewById(R.id.cb_reach3)).isChecked();
-        selectedToken.w4.reach = ((CheckBox)findViewById(R.id.cb_reach4)).isChecked();
-
-        tokenList.set(position, selectedToken);
-
-        Toast toast = Toast.makeText(this, "Token Updated", Toast.LENGTH_SHORT);
-        toast.show();
     }
 
     /*

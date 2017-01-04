@@ -33,13 +33,6 @@ public class Weapon {
         if (reach){
             reachS = " - Reach";
         }
-
-
-        if (name.equals("")){
-            return "";
-        } else {
-            return this.name + ": " + this.range + "ft." + reachS + rangedS ;
-        }
-
+        return this.name + ": " + this.range + "ft." + reachS + rangedS ;
     }
 }

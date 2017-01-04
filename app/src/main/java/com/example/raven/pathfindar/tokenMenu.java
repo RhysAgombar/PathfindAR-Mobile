@@ -16,7 +16,6 @@ import java.util.ArrayList;
 public class tokenMenu extends MainActivity {
 
     public static ArrayList<Token> tokenList = new ArrayList<>();
-    public static ListView listView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -25,7 +24,7 @@ public class tokenMenu extends MainActivity {
 
         Intent callingIntent = getIntent();
 
-        listView = (ListView)findViewById(R.id.lv_tokenList);
+        ListView listView = (ListView)findViewById(R.id.lv_tokenList);
         listView.setAdapter(new tokenAdapter(this, tokenList));
 
     }

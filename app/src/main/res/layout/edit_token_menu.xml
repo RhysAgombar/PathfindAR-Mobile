@@ -395,8 +395,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:text="Save"
-        android:onClick="saveToken"/>
+        android:text="Save"/>
 
     <Button
         android:id="@+id/bt_editTokenLoad"
@@ -413,15 +412,6 @@
         android:layout_alignParentBottom="true"
         android:text="Back"
         android:onClick="closeTokenEdit"/>
-
-    <Button
-        android:id="@+id/bt_editTokenUpdate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@id/bt_editTokenBack"
-        android:text="Update"
-        android:onClick="updateToken"/>
 
 
 </RelativeLayout>
