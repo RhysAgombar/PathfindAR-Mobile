@@ -32,9 +32,12 @@ std::string to_stringB(bool value)
 
 }
 
-int hSize = 3;
-int vSize = 3;
+int hSize = 20;
+int vSize = 20;
 int** gridCount; //gridCount[11][11];
+
+std::vector<cv::Point> squaresToColour;
+
 class gridSquare {
 public:
     cv::Point corner[4];
@@ -68,8 +71,207 @@ public:
         //    return false;
         //}
     }
+
+    void shadeSquare(cv::Mat imageOut, cv::Scalar colour) {
+        cv::Point polyPoints[1][4];
+        polyPoints[0][0] = corner[0];
+        polyPoints[0][1] = corner[1];
+        polyPoints[0][2] = corner[2];
+        polyPoints[0][3] = corner[3];
+
+        const cv::Point* ppt[1] = { polyPoints[0] };
+        int npt[] = { 4 };
+
+        cv::fillPoly(imageOut, ppt, npt, 1, colour);
+    }
     // add  shading functions
 };
+
+void colourRadiusFromSquare(cv::Point pos, int radius, bool reach){
+    radius = radius / 5; // Convert from ft. to squares
+
+    double countRadius = 0.0;
+
+    int diagonal = 0;
+    int holder = 0;
+
+    std::vector<cv::Point> positions;
+
+    while (countRadius < radius){
+        countRadius += 1.5;
+        diagonal++;
+    }
+
+    countRadius = 0.0;
+
+    // Upper Right
+    holder = diagonal;
+    while (diagonal >= 0) {
+        cv::Point current;
+        current.x = pos.x - diagonal;
+        current.y = pos.y + diagonal;
+
+        positions.push_back(current);
+
+        countRadius = 1.5 * diagonal;
+
+        while (countRadius < radius){
+            countRadius += 1.0;
+            current.x -= 1;
+
+            positions.push_back(current);
+        }
+
+        diagonal--;
+    }
+
+    diagonal = holder;
+    while (diagonal >= 0) {
+        cv::Point current;
+        current.x = pos.x - diagonal;
+        current.y = pos.y + diagonal;
+
+        positions.push_back(current);
+
+        countRadius = 1.5 * diagonal;
+
+        while (countRadius < radius){
+            countRadius += 1.0;
+            current.y += 1;
+
+            positions.push_back(current);
+        }
+
+        diagonal--;
+    }
+
+    // Lower Right
+    diagonal = holder;
+    while (diagonal >= 0) {
+        cv::Point current;
+        current.x = pos.x + diagonal;
+        current.y = pos.y + diagonal;
+
+        positions.push_back(current);
+
+        countRadius = 1.5 * diagonal;
+
+        while (countRadius < radius){
+            countRadius += 1.0;
+            current.x += 1;
+
+            positions.push_back(current);
+        }
+
+        diagonal--;
+    }
+
+    diagonal = holder;
+    while (diagonal >= 0) {
+        cv::Point current;
+        current.x = pos.x + diagonal;
+        current.y = pos.y + diagonal;
+
+        positions.push_back(current);
+
+        countRadius = 1.5 * diagonal;
+
+        while (countRadius < radius){
+            countRadius += 1.0;
+            current.y += 1;
+
+            positions.push_back(current);
+        }
+
+        diagonal--;
+    }
+
+    // Lower Left
+    diagonal = holder;
+    while (diagonal >= 0) {
+        cv::Point current;
+        current.x = pos.x + diagonal;
+        current.y = pos.y - diagonal;
+
+        positions.push_back(current);
+
+        countRadius = 1.5 * diagonal;
+
+        while (countRadius < radius){
+            countRadius += 1.0;
+            current.x += 1;
+
+            positions.push_back(current);
+        }
+
+        diagonal--;
+    }
+
+    diagonal = holder;
+    while (diagonal >= 0) {
+        cv::Point current;
+        current.x = pos.x + diagonal;
+        current.y = pos.y - diagonal;
+
+        positions.push_back(current);
+
+        countRadius = 1.5 * diagonal;
+
+        while (countRadius < radius){
+            countRadius += 1.0;
+            current.y -= 1;
+
+            positions.push_back(current);
+        }
+
+        diagonal--;
+    }
+
+    // Upper Left
+    diagonal = holder;
+    while (diagonal >= 0) {
+        cv::Point current;
+        current.x = pos.x - diagonal;
+        current.y = pos.y - diagonal;
+
+        positions.push_back(current);
+
+        countRadius = 1.5 * diagonal;
+
+        while (countRadius < radius){
+            countRadius += 1.0;
+            current.x -= 1;
+
+            positions.push_back(current);
+        }
+
+        diagonal--;
+    }
+
+    diagonal = holder;
+    while (diagonal >= 0) {
+        cv::Point current;
+        current.x = pos.x - diagonal;
+        current.y = pos.y - diagonal;
+
+        positions.push_back(current);
+
+        countRadius = 1.5 * diagonal;
+
+        while (countRadius < radius){
+            countRadius += 1.0;
+            current.y -= 1;
+
+            positions.push_back(current);
+        }
+
+        diagonal--;
+    }
+
+
+    squaresToColour = positions;
+};
+
 class arMarker {
 public:
     cv::Point corner[4];
@@ -495,7 +697,7 @@ void findTokens(cv::Mat imageCopy, cv::Mat imageOut) {
 
                 if (gridCount[j][k] > 1) { // Requiring more than one countour in a square cuts down on noise/drift a bit
 
-                    std::vector<cv::Point> testVec = grid[j][k].getPointsArray();
+                    //std::vector<cv::Point> testVec = grid[j][k].getPointsArray();
 
                     cv::Point polyPoints[1][4];
                     polyPoints[0][0] = grid[j][k].corner[0];
@@ -661,6 +863,10 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
     finalMat.copyTo(partMat);
 
 
+    //cv::resize(inMat,inMat,cv::Size(10,100));
+
+
+
     std::vector<int> ids;
     std::vector<std::vector<cv::Point2f> > corners;
 
@@ -688,6 +894,32 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
 
         // refine findTokens
         findTokens(partMat, finalMat);
+
+
+        cv::Point np;
+        np.x = 10;
+        np.y = 10;
+
+        colourRadiusFromSquare(np,30,false);
+
+        cv::Mat test;
+        finalMat.copyTo(test);
+
+        if (squaresToColour.size() > 0){
+            for (int i = 0; i < squaresToColour.size(); i++){
+                int j = 0, k = 0;
+                j = squaresToColour.at(i).x;
+                k = squaresToColour.at(i).y;
+
+                grid[j][k].shadeSquare(finalMat, cv::Scalar(255,0,0));
+
+            }
+        }
+
+
+        addWeighted( finalMat, 0.3, test, 1.0 - 0.3, 0.0, finalMat);
+
+
 
     }
 
