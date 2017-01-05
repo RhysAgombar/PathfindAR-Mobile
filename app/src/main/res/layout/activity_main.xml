@@ -23,6 +23,21 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom">
+
+        <Button
+            android:id="@+id/bt_swapGridType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Move"
+            android:onClick="toggleGridType"/>
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="right">
 
         <Button
@@ -42,7 +57,5 @@
             android:onClick="openTokenMenu"/>
 
     </RelativeLayout>
-
-
 
 </FrameLayout>

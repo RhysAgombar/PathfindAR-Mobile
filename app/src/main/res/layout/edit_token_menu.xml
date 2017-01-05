@@ -53,7 +53,7 @@
             android:layout_toEndOf="@+id/bt_minusMR"
             android:paddingRight="10dp"
             android:paddingLeft="10dp"
-            android:text="@string/_10"/>
+            android:text="@string/_30"/>
 
         <Button
             android:id="@+id/bt_plusMR"

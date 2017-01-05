@@ -22,11 +22,17 @@ std::string to_string(T value)
     return os.str() ;
 }
 
-int hSize = 20;
-int vSize = 20;
+int hSize = 10;
+int vSize = 10;
 int** gridCount; //gridCount[11][11];
 
 std::vector<cv::Point> squaresToColour;
+int selectedID = -1;
+
+int gridType = 0;
+static const int MOVEMENT = 0;
+static const int ATTACK = 1;
+
 
 class gridSquare {
 public:
@@ -77,7 +83,7 @@ public:
     // add  shading functions
 };
 
-void colourRadiusFromSquare(cv::Point pos, int radius, bool reach){
+std::vector<cv::Point> colourRadiusFromSquare(cv::Point pos, int radius, int exclusionRadius){
     radius = radius / 5; // Convert from ft. to squares
 
     double countRadius = 0.0;
@@ -86,6 +92,11 @@ void colourRadiusFromSquare(cv::Point pos, int radius, bool reach){
     int holder = 0;
 
     std::vector<cv::Point> positions;
+    std::vector<cv::Point> excluded;
+
+    if (exclusionRadius > 0){
+        excluded = colourRadiusFromSquare(pos, exclusionRadius, 0);
+    }
 
     while (countRadius < radius){
         countRadius += 1.5;
@@ -101,7 +112,22 @@ void colourRadiusFromSquare(cv::Point pos, int radius, bool reach){
         current.x = pos.x - diagonal;
         current.y = pos.y + diagonal;
 
-        positions.push_back(current);
+        if (current.x != pos.x){
+            if (current.y != pos.y) {
+
+                bool found = false;
+                for (int i = 0; i < excluded.size(); i++){
+                    if (current == excluded.at(i)){
+                        found = true;
+                    }
+                }
+
+                if (!found) {
+                    positions.push_back(current);
+                }
+
+            }
+        }
 
         countRadius = 1.5 * diagonal;
 
@@ -109,19 +135,41 @@ void colourRadiusFromSquare(cv::Point pos, int radius, bool reach){
             countRadius += 1.0;
             current.x -= 1;
 
-            positions.push_back(current);
+            bool found = false;
+            for (int i = 0; i < excluded.size(); i++){
+                if (current == excluded.at(i)){
+                    found = true;
+                }
+            }
+
+            if (!found) {
+                positions.push_back(current);
+            }
         }
 
         diagonal--;
     }
 
     diagonal = holder;
-    while (diagonal > 0) { // >=
+    while (diagonal >= 0) {
         cv::Point current;
         current.x = pos.x - diagonal;
         current.y = pos.y + diagonal;
 
-        positions.push_back(current);
+        if (current.x != pos.x){
+            if (current.y != pos.y) {
+                bool found = false;
+                for (int i = 0; i < excluded.size(); i++){
+                    if (current == excluded.at(i)){
+                        found = true;
+                    }
+                }
+
+                if (!found) {
+                    positions.push_back(current);
+                }
+            }
+        }
 
         countRadius = 1.5 * diagonal;
 
@@ -129,11 +177,21 @@ void colourRadiusFromSquare(cv::Point pos, int radius, bool reach){
             countRadius += 1.0;
             current.y += 1;
 
-            positions.push_back(current);
+            bool found = false;
+            for (int i = 0; i < excluded.size(); i++){
+                if (current == excluded.at(i)){
+                    found = true;
+                }
+            }
+
+            if (!found) {
+                positions.push_back(current);
+            }
         }
 
         diagonal--;
     }
+
 
     // Lower Right
     diagonal = holder;
@@ -142,7 +200,20 @@ void colourRadiusFromSquare(cv::Point pos, int radius, bool reach){
         current.x = pos.x + diagonal;
         current.y = pos.y + diagonal;
 
-        positions.push_back(current);
+        if (current.x != pos.x){
+            if (current.y != pos.y) {
+                bool found = false;
+                for (int i = 0; i < excluded.size(); i++){
+                    if (current == excluded.at(i)){
+                        found = true;
+                    }
+                }
+
+                if (!found) {
+                    positions.push_back(current);
+                }
+            }
+        }
 
         countRadius = 1.5 * diagonal;
 
@@ -150,7 +221,16 @@ void colourRadiusFromSquare(cv::Point pos, int radius, bool reach){
             countRadius += 1.0;
             current.x += 1;
 
-            positions.push_back(current);
+            bool found = false;
+            for (int i = 0; i < excluded.size(); i++){
+                if (current == excluded.at(i)){
+                    found = true;
+                }
+            }
+
+            if (!found) {
+                positions.push_back(current);
+            }
         }
 
         diagonal--;
@@ -162,7 +242,20 @@ void colourRadiusFromSquare(cv::Point pos, int radius, bool reach){
         current.x = pos.x + diagonal;
         current.y = pos.y + diagonal;
 
-        positions.push_back(current);
+        if (current.x != pos.x){
+            if (current.y != pos.y) {
+                bool found = false;
+                for (int i = 0; i < excluded.size(); i++){
+                    if (current == excluded.at(i)){
+                        found = true;
+                    }
+                }
+
+                if (!found) {
+                    positions.push_back(current);
+                }
+            }
+        }
 
         countRadius = 1.5 * diagonal;
 
@@ -170,7 +263,16 @@ void colourRadiusFromSquare(cv::Point pos, int radius, bool reach){
             countRadius += 1.0;
             current.y += 1;
 
-            positions.push_back(current);
+            bool found = false;
+            for (int i = 0; i < excluded.size(); i++){
+                if (current == excluded.at(i)){
+                    found = true;
+                }
+            }
+
+            if (!found) {
+                positions.push_back(current);
+            }
         }
 
         diagonal--;
@@ -183,7 +285,20 @@ void colourRadiusFromSquare(cv::Point pos, int radius, bool reach){
         current.x = pos.x + diagonal;
         current.y = pos.y - diagonal;
 
-        positions.push_back(current);
+        if (current.x != pos.x){
+            if (current.y != pos.y) {
+                bool found = false;
+                for (int i = 0; i < excluded.size(); i++){
+                    if (current == excluded.at(i)){
+                        found = true;
+                    }
+                }
+
+                if (!found) {
+                    positions.push_back(current);
+                }
+            }
+        }
 
         countRadius = 1.5 * diagonal;
 
@@ -191,7 +306,16 @@ void colourRadiusFromSquare(cv::Point pos, int radius, bool reach){
             countRadius += 1.0;
             current.x += 1;
 
-            positions.push_back(current);
+            bool found = false;
+            for (int i = 0; i < excluded.size(); i++){
+                if (current == excluded.at(i)){
+                    found = true;
+                }
+            }
+
+            if (!found) {
+                positions.push_back(current);
+            }
         }
 
         diagonal--;
@@ -203,7 +327,20 @@ void colourRadiusFromSquare(cv::Point pos, int radius, bool reach){
         current.x = pos.x + diagonal;
         current.y = pos.y - diagonal;
 
-        positions.push_back(current);
+        if (current.x != pos.x){
+            if (current.y != pos.y) {
+                bool found = false;
+                for (int i = 0; i < excluded.size(); i++){
+                    if (current == excluded.at(i)){
+                        found = true;
+                    }
+                }
+
+                if (!found) {
+                    positions.push_back(current);
+                }
+            }
+        }
 
         countRadius = 1.5 * diagonal;
 
@@ -211,7 +348,16 @@ void colourRadiusFromSquare(cv::Point pos, int radius, bool reach){
             countRadius += 1.0;
             current.y -= 1;
 
-            positions.push_back(current);
+            bool found = false;
+            for (int i = 0; i < excluded.size(); i++){
+                if (current == excluded.at(i)){
+                    found = true;
+                }
+            }
+
+            if (!found) {
+                positions.push_back(current);
+            }
         }
 
         diagonal--;
@@ -224,7 +370,20 @@ void colourRadiusFromSquare(cv::Point pos, int radius, bool reach){
         current.x = pos.x - diagonal;
         current.y = pos.y - diagonal;
 
-        positions.push_back(current);
+        if (current.x != pos.x){
+            if (current.y != pos.y) {
+                bool found = false;
+                for (int i = 0; i < excluded.size(); i++){
+                    if (current == excluded.at(i)){
+                        found = true;
+                    }
+                }
+
+                if (!found) {
+                    positions.push_back(current);
+                }
+            }
+        }
 
         countRadius = 1.5 * diagonal;
 
@@ -232,7 +391,16 @@ void colourRadiusFromSquare(cv::Point pos, int radius, bool reach){
             countRadius += 1.0;
             current.x -= 1;
 
-            positions.push_back(current);
+            bool found = false;
+            for (int i = 0; i < excluded.size(); i++){
+                if (current == excluded.at(i)){
+                    found = true;
+                }
+            }
+
+            if (!found) {
+                positions.push_back(current);
+            }
         }
 
         diagonal--;
@@ -244,7 +412,20 @@ void colourRadiusFromSquare(cv::Point pos, int radius, bool reach){
         current.x = pos.x - diagonal;
         current.y = pos.y - diagonal;
 
-        positions.push_back(current);
+        if (current.x != pos.x){
+            if (current.y != pos.y) {
+                bool found = false;
+                for (int i = 0; i < excluded.size(); i++){
+                    if (current == excluded.at(i)){
+                        found = true;
+                    }
+                }
+
+                if (!found) {
+                    positions.push_back(current);
+                }
+            }
+        }
 
         countRadius = 1.5 * diagonal;
 
@@ -252,14 +433,24 @@ void colourRadiusFromSquare(cv::Point pos, int radius, bool reach){
             countRadius += 1.0;
             current.y -= 1;
 
-            positions.push_back(current);
+            bool found = false;
+            for (int i = 0; i < excluded.size(); i++){
+                if (current == excluded.at(i)){
+                    found = true;
+                }
+            }
+
+            if (!found) {
+                positions.push_back(current);
+            }
         }
 
         diagonal--;
     }
 
+    //squaresToColour = positions;
 
-    squaresToColour = positions;
+    return positions;
 };
 
 class arMarker {
@@ -288,7 +479,7 @@ public:
     int id = 0;
     std::string name = "";
     cv::Point location = cv::Point(0.0,0.0);
-    int mRange = 0;
+    int mRange = 30;
     //int mRemain;
     int lifespan = 0;
     bool found = false;
@@ -477,7 +668,35 @@ cv::Point getCenter(std::vector<cv::Point> contour) {
     int minY = 1e9;
     int maxY = -1;
 
+    int boundXmin = 1e9, boundXmax = -1; // Bounding box around the aruco markers to avoid contours outside the grid from being counted
+    int boundYmin = 1e9, boundYmax = -1;
+
+    for (int i = 0; i < 4; i++){
+        if (arUco[i].center.x > boundXmax) {
+            boundXmax = arUco[i].center.x;
+        }
+        if (arUco[i].center.y > boundYmax) {
+            boundYmax = arUco[i].center.y;
+        }
+        if (arUco[i].center.x < boundXmin){
+            boundXmin = arUco[i].center.x;
+        }
+        if (arUco[i].center.y < boundYmin){
+            boundYmin = arUco[i].center.y;
+        }
+    }
+
+
     for (int i = 0; i < contour.size() - 1; i++) {
+
+        if (contour.at(i).x > boundXmax || contour.at(i).x < boundXmin){
+            return cv::Point(-1,-1);
+        }
+
+        if (contour.at(i).y > boundYmax || contour.at(i).y < boundYmin){
+            return cv::Point(-1,-1);
+        }
+
         if (contour.at(i).x < minX) {
             minX = contour.at(i).x;
         }
@@ -630,20 +849,23 @@ void findTokens(cv::Mat imageCopy, cv::Mat imageOut) {
         if (contours.at(i).capacity() > 3) { // Eliminates the remaining noise
             cv::Point cent = getCenter(contours.at(i));
 
-            bool flag = true;
+            if (cent.x != -1 && cent.y != -1) {
+                bool flag = true;
 
-            // eliminate aruco markers
-            for (int j = 0; j < 4; j++) {
-                if (isWithin(cent, arUco[j].center, (0.75 * distance(arUco[j].corner[0], arUco[j].corner[2])))) {
-                    flag = false;
+                // eliminate aruco markers
+                for (int j = 0; j < 4; j++) {
+                    if (isWithin(cent, arUco[j].center, (0.75 * distance(arUco[j].corner[0], arUco[j].corner[2])))) {
+                        flag = false;
+                    }
+                }
+
+                if (flag == true) {
+                    //if (hierarchy[i][3] < 0) {
+                    cont2.push_back(contours.at(i));
+                    //}
                 }
             }
 
-            if (flag == true) {
-                //if (hierarchy[i][3] < 0) {
-                cont2.push_back(contours.at(i));
-                //}
-            }
         }
     }
 
@@ -711,7 +933,7 @@ void findTokens(cv::Mat imageCopy, cv::Mat imageOut) {
             }
         }
 
-        cv::circle(imageOut, cent, 5, cv::Scalar(255, 0, 255), -1);
+       cv::circle(imageOut, cent, 5, cv::Scalar(255, 0, 255), -1);
 
     }
 
@@ -723,6 +945,9 @@ void findTokens(cv::Mat imageCopy, cv::Mat imageOut) {
     uTokens.clear();
 
     pauseTracking = false;
+
+    /*cv::Mat hMat;
+    imageOut.copyTo(hMat);
 
     for (int i = 0; i < tokenVec.size(); i++) {
 
@@ -741,11 +966,34 @@ void findTokens(cv::Mat imageCopy, cv::Mat imageOut) {
         cv::fillPoly(imageOut, ppt, npt, 1, tokenVec.at(i).colour);
     }
 
+    addWeighted( imageOut, alpha, hMat, 1.0 - alpha, 0.0, imageOut); */
+
     //cv::imshow("Contour Centers", drawing);
 
 }
 
-void drawGrid(cv::Mat imageCopy, std::vector<cv::Point2f> gridCorners, int horiz, int vert) {
+void drawTokens(cv::Mat imageOut){
+    cv::Mat hMat;
+    imageOut.copyTo(hMat);
+
+    for (int i = 0; i < tokenVec.size(); i++) {
+
+        int j = tokenVec.at(i).location.x;
+        int k = tokenVec.at(i).location.y;
+
+        cv::Point polyPoints[1][4];
+        polyPoints[0][0] = grid[j][k].corner[0];
+        polyPoints[0][1] = grid[j][k].corner[1];
+        polyPoints[0][2] = grid[j][k].corner[2];
+        polyPoints[0][3] = grid[j][k].corner[3];
+
+        grid[j][k].shadeSquare(imageOut, tokenVec.at(i).colour);
+
+    }
+
+}
+
+void computeGrid(cv::Mat imageCopy, std::vector<cv::Point2f> gridCorners, int horiz, int vert) {
     cv::Mat dirVec[4]; // top left -> top right, bottom left -> bottom right, top left -> bottom left, top right -> bottom right
     float hDist, vDist, dist;
 
@@ -782,13 +1030,13 @@ void drawGrid(cv::Mat imageCopy, std::vector<cv::Point2f> gridCorners, int horiz
             vLines[i][1] = cv::Point(gridCorners.at(3).x + (distx * (i / (float)horiz)), gridCorners.at(3).y + (disty) * (float)(i / (float)horiz));
         }
 
-        for (int i = 0; i <= vert; i++) {
+        /*for (int i = 0; i <= vert; i++) {
             cv::line(imageCopy, hLines[i][0], hLines[i][1], cv::Scalar(255, 255, 255));
         }
 
         for (int i = 0; i <= horiz; i++) {
             cv::line(imageCopy, vLines[i][0], vLines[i][1], cv::Scalar(255, 255, 255));
-        }
+        }*/
 
         for (int i = 0; i < vert; i++) {
             for (int j = 0; j < horiz; j++) {
@@ -799,6 +1047,16 @@ void drawGrid(cv::Mat imageCopy, std::vector<cv::Point2f> gridCorners, int horiz
             }
         }
 
+    }
+}
+
+void drawGrid(cv::Mat finalMat, int horiz, int vert){
+    for (int i = 0; i <= vert; i++) {
+        cv::line(finalMat, hLines[i][0], hLines[i][1], cv::Scalar(255, 255, 255));
+    }
+
+    for (int i = 0; i <= horiz; i++) {
+        cv::line(finalMat, vLines[i][0], vLines[i][1], cv::Scalar(255, 255, 255));
     }
 }
 
@@ -843,6 +1101,55 @@ void init() {
     uTokens.clear();
 }
 
+void colourMovementRange(int id, double alpha, cv::Mat finalMat){
+
+    Token selToken;
+
+    for (int i = 0; i < tokenVec.size(); i++){
+        if (tokenVec.at(i).id == id){
+            selToken = tokenVec.at(i);
+        }
+    }
+
+
+    cv::Point np = selToken.location;
+    int exclusion = 0;
+    cv::Scalar colour;
+
+    if (gridType == ATTACK) {
+        if (selToken.w1.reach == true) {
+            exclusion = 5;
+        }
+        squaresToColour = colourRadiusFromSquare(np,selToken.w1.range, exclusion);
+        colour = cv::Scalar(232,44,15);
+    } else {
+        squaresToColour = colourRadiusFromSquare(np,selToken.mRange, exclusion);
+        colour = cv::Scalar(15,169,15);
+    }
+
+
+    cv::Mat hMat;
+    finalMat.copyTo(hMat);
+
+    if (squaresToColour.size() > 0){
+        for (int i = 0; i < squaresToColour.size(); i++){
+            int j = 0, k = 0;
+            j = squaresToColour.at(i).x;
+            k = squaresToColour.at(i).y;
+
+            if (j >= 0 && j <= vSize){
+                if (k >= 0 && k <= hSize){
+                    grid[j][k].shadeSquare(finalMat, colour);
+                }
+            }
+
+        }
+    }
+
+
+    addWeighted( finalMat, alpha, hMat, 1.0 - alpha, 0.0, finalMat);
+}
+
 extern "C"
 void
 Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobject instance, jlong image_final, jlong image_editable) {
@@ -880,36 +1187,26 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
             gridCorners = findCorners(corners, ids);
         }
 
-        drawGrid(finalMat, gridCorners, hSize, vSize);
+        computeGrid(finalMat, gridCorners, hSize, vSize);
 
         // refine findTokens
         findTokens(partMat, finalMat);
 
 
-        cv::Point np;
-        np.x = 10;
-        np.y = 10;
-
-        colourRadiusFromSquare(np,30,false);
-
-        cv::Mat test;
-        finalMat.copyTo(test);
-
-        if (squaresToColour.size() > 0){
-            for (int i = 0; i < squaresToColour.size(); i++){
-                int j = 0, k = 0;
-                j = squaresToColour.at(i).x;
-                k = squaresToColour.at(i).y;
-
-                grid[j][k].shadeSquare(finalMat, cv::Scalar(255,0,0));
-
+        if (gridType == MOVEMENT) {
+            if (selectedID != -1){
+                colourMovementRange(selectedID, 0.5, finalMat);
             }
-        }
+            drawTokens(finalMat); // No transparency for tokens. Doesn't work well, becomes muddied.
+        } else if (gridType == ATTACK) {
+            drawTokens(finalMat); // Draw overtop of tokens to show which ones are in range
+            if (selectedID != -1){
+                colourMovementRange(selectedID, 0.5, finalMat);
+            }
+        };
 
 
-        addWeighted( finalMat, 0.3, test, 1.0 - 0.3, 0.0, finalMat);
-
-
+        drawGrid(finalMat, hSize, vSize);
 
     }
 
@@ -927,7 +1224,17 @@ Java_com_example_raven_pathfindar_MainActivity_adjustGridDimensions(JNIEnv *env,
     init();
 }
 
+extern "C"
+void
+Java_com_example_raven_pathfindar_MainActivity_setSelectedToken(JNIEnv *env, jobject instance, jint tokenID) {
+    selectedID = tokenID;
+}
 
+extern "C"
+void
+Java_com_example_raven_pathfindar_MainActivity_setDisplayType(JNIEnv *env, jobject instance, jint type) {
+    gridType = type;
+}
 
 void split(const std::string &str, char split, std::vector<std::string> &elements) {
     std::stringstream ss;
@@ -1041,19 +1348,6 @@ Java_com_example_raven_pathfindar_MainActivity_setTokenList(JNIEnv *env, jobject
                 tokenVec.at(j) = nTok; // test this
             }
         }
-
-        /*
-         *      int id = 0;
-                std::string name = "";
-                cv::Point location = cv::Point(0.0,0.0);
-                int mRange = 0;
-                //int mRemain;
-                int lifespan = 0;
-                bool found = false;
-                cv::Scalar colour = cv::Scalar(0,0,0);
-                Weapon w1, w2, w3, w4;
-         *
-         */
 
     }
 

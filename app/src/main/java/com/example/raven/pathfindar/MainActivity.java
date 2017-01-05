@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.hardware.camera2.params.*;
@@ -42,6 +43,12 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
     public static final int REQUEST_GRID_MENU = 1;
     public static final int REQUEST_TOKEN_MENU = 2;
+
+    public static final int MOVEMENT = 0;
+    public static final int ATTACK = 1;
+
+    private int gridToggle = 0;
+    private int selWeapon = 0;
 
     private boolean circleFlag = false;
     private int x = 10, y = 10;
@@ -160,6 +167,23 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             circleFlag = true;
             init();
         }
+    }
+
+
+    public void toggleGridType(View view) {
+
+        if (gridToggle == MOVEMENT) {
+            gridToggle = ATTACK;
+            Button toggleButton = (Button)findViewById(R.id.bt_swapGridType);
+            toggleButton.setText("Attack");
+        } else {
+            gridToggle = MOVEMENT;
+            Button toggleButton = (Button)findViewById(R.id.bt_swapGridType);
+            toggleButton.setText("Move");
+        }
+
+        setDisplayType(gridToggle);
+
     }
 
     public void openGridMenu(View view) {
@@ -297,7 +321,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             out = out.concat(tl.get(i).mRange + "@");
             out = out.concat(tl.get(i).lifespan + "@");
             out = out.concat(tl.get(i).found + "@");
-            out = out.concat(tl.get(i).colour.val[0] + "," + tl.get(i).colour.val[1] + "," + tl.get(i).colour.val[2] + "," + tl.get(i).colour.val[3] + "|");
+            out = out.concat(tl.get(i).colour.val[0] + "," + tl.get(i).colour.val[1] + "," + tl.get(i).colour.val[2] + "," + tl.get(i).colour.val[3] + "@");
             out = out.concat(tl.get(i).w1.name + "@");
             out = out.concat(tl.get(i).w1.range + "@");
             out = out.concat(tl.get(i).w1.reach + "@");
@@ -313,7 +337,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             out = out.concat(tl.get(i).w4.name + "@");
             out = out.concat(tl.get(i).w4.range + "@");
             out = out.concat(tl.get(i).w4.reach + "@");
-            out = out.concat(tl.get(i).w4.ranged + "@");
+            out = out.concat(tl.get(i).w4.ranged + "|");
         }
 
         return out;
@@ -335,9 +359,12 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
         if (req == REQUEST_TOKEN_MENU){
 
+            int selectedID = in.getIntExtra("selectedToken", -1);
+
+
             String out = setTokenString(tokenList);
             setTokenList(out);
-
+            setSelectedToken(selectedID);
         }
 
 
@@ -353,6 +380,8 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     public native void adjustGridDimensions(int x,int y);
     public native String getTokenList();
     public native void setTokenList(String tokenListString);
+    public native void setDisplayType(int type);
+    public native void setSelectedToken(int selectedTokenID);
     public native void init();
 
 }

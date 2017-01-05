@@ -28,10 +28,29 @@ public class tokenMenu extends MainActivity {
         listView = (ListView)findViewById(R.id.lv_tokenList);
         listView.setAdapter(new tokenAdapter(this, tokenList));
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) { // When you click an item in the list:
+
+                Token selTok = tokenList.get(position);
+
+                if (selTok.found){
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra("selectedToken", selTok.id);
+                    setResult(RESULT_OK, resultIntent);
+                    finish();
+                }
+
+            }
+        });
+
     }
 
     public void closeTokenMenu(View view){
         Intent resultIntent = new Intent();
+
+        resultIntent.putExtra("selectedToken", -1);
+
         setResult(this.RESULT_OK, resultIntent);
 
         finish();
