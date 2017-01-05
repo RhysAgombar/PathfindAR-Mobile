@@ -98,7 +98,7 @@ std::vector<cv::Point> colourRadiusFromSquare(cv::Point pos, int radius, int exc
         excluded = colourRadiusFromSquare(pos, exclusionRadius, 0);
     }
 
-    while (countRadius < radius){
+    while (floor(countRadius + 1.5) <= radius){
         countRadius += 1.5;
         diagonal++;
     }
@@ -1101,7 +1101,7 @@ void init() {
     uTokens.clear();
 }
 
-void colourMovementRange(int id, double alpha, cv::Mat finalMat){
+void colourRange(int id, double alpha, cv::Mat finalMat){
 
     Token selToken;
 
@@ -1114,40 +1114,81 @@ void colourMovementRange(int id, double alpha, cv::Mat finalMat){
 
     cv::Point np = selToken.location;
     int exclusion = 0;
-    cv::Scalar colour;
+    cv::Scalar colour[6];
+    colour[0] = cv::Scalar(15, 169, 15);
+    colour[1] = cv::Scalar(255, 0, 0);
+    colour[2] = cv::Scalar(150, 0, 0);
+    colour[3] = cv::Scalar(255, 0, 0);
+    colour[4] = cv::Scalar(150, 0, 0);
+    colour[5] = cv::Scalar(255, 0, 0);
+
+    //colour[4] = cv::Scalar(84, 202, 0);
+    //colour[5] = cv::Scalar(232,44,15);
 
     if (gridType == ATTACK) {
-        if (selToken.w1.reach == true) {
+        if (selToken.w1.reach) {
             exclusion = 5;
         }
-        squaresToColour = colourRadiusFromSquare(np,selToken.w1.range, exclusion);
-        colour = cv::Scalar(232,44,15);
-    } else {
-        squaresToColour = colourRadiusFromSquare(np,selToken.mRange, exclusion);
-        colour = cv::Scalar(15,169,15);
-    }
 
+        cv::Mat hMat;
+        finalMat.copyTo(hMat);
 
-    cv::Mat hMat;
-    finalMat.copyTo(hMat);
+        int itterations = 0;
+        if (selToken.w1.ranged){
+            itterations = 4; //  5 itterations total - Technically, for projectile weapons, you can shoot up to 10 (only 5 for thrown), but that will put you well off the battle mat, considering most are at least 15ft range.
+        }
 
-    if (squaresToColour.size() > 0){
-        for (int i = 0; i < squaresToColour.size(); i++){
-            int j = 0, k = 0;
-            j = squaresToColour.at(i).x;
-            k = squaresToColour.at(i).y;
-
-            if (j >= 0 && j <= vSize){
-                if (k >= 0 && k <= hSize){
-                    grid[j][k].shadeSquare(finalMat, colour);
-                }
+        for (int l = itterations; l >= 0; l--){
+            if (l == 0) {
+                squaresToColour = colourRadiusFromSquare(np,selToken.w1.range, 0);
+            } else {
+                squaresToColour = colourRadiusFromSquare(np,selToken.w1.range * (l + 1), selToken.w1.range * (l));
             }
 
+            if (squaresToColour.size() > 0){
+                for (int i = 0; i < squaresToColour.size(); i++){
+                    int j = 0, k = 0;
+                    j = squaresToColour.at(i).x;
+                    k = squaresToColour.at(i).y;
+
+                    if (j >= 0 && j <= vSize){
+                        if (k >= 0 && k <= hSize){
+                            grid[j][k].shadeSquare(finalMat, colour[l + 1]);
+                        }
+                    }
+
+                }
+            }
         }
+
+        addWeighted( finalMat, alpha, hMat, 1.0 - alpha, 0.0, finalMat);
+
+
+    } else {
+        squaresToColour = colourRadiusFromSquare(np,selToken.mRange, exclusion);
+
+        cv::Mat hMat;
+        finalMat.copyTo(hMat);
+
+        if (squaresToColour.size() > 0){
+            for (int i = 0; i < squaresToColour.size(); i++){
+                int j = 0, k = 0;
+                j = squaresToColour.at(i).x;
+                k = squaresToColour.at(i).y;
+
+                if (j >= 0 && j <= vSize){
+                    if (k >= 0 && k <= hSize){
+                        grid[j][k].shadeSquare(finalMat, colour[0]);
+                    }
+                }
+
+            }
+        }
+
+
+        addWeighted( finalMat, alpha, hMat, 1.0 - alpha, 0.0, finalMat);
     }
 
-
-    addWeighted( finalMat, alpha, hMat, 1.0 - alpha, 0.0, finalMat);
 }
 
 extern "C"
@@ -1195,13 +1236,13 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
 
         if (gridType == MOVEMENT) {
             if (selectedID != -1){
-                colourMovementRange(selectedID, 0.5, finalMat);
+                colourRange(selectedID, 0.5, finalMat);
             }
             drawTokens(finalMat); // No transparency for tokens. Doesn't work well, becomes muddied.
         } else if (gridType == ATTACK) {
             drawTokens(finalMat); // Draw overtop of tokens to show which ones are in range
             if (selectedID != -1){
-                colourMovementRange(selectedID, 0.5, finalMat);
+                colourRange(selectedID, 0.5, finalMat);
             }
         };
 
