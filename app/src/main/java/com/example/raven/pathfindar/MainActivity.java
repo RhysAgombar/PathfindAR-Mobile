@@ -17,12 +17,15 @@ import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
@@ -48,10 +51,18 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     public static final int ATTACK = 1;
 
     private int gridToggle = 0;
-    private int selWeapon = 0;
+    private int selWeapon = -1;
+    private int selToken = -1;
 
-    private boolean circleFlag = false;
+    private boolean tracking = false;
+
+    private boolean paused = false;
+    public static final int PAUSE_TIME = 150;
+    private int pauseTimer = PAUSE_TIME;
+
     private int x = 10, y = 10;
+    int screenWidth;
+    int screenHeight;
 
     private static ArrayList<Token> tokenList = new ArrayList();
 
@@ -95,6 +106,24 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         mOpenCvCameraView.setCvCameraViewListener(this);
         mOpenCvCameraView.enableView();
 
+        Button w1 = (Button)findViewById(R.id.bt_selWeapon1);
+        Button w2 = (Button)findViewById(R.id.bt_selWeapon2);
+        Button w3 = (Button)findViewById(R.id.bt_selWeapon3);
+        Button w4 = (Button)findViewById(R.id.bt_selWeapon4);
+        w1.setVisibility(View.INVISIBLE);
+        w2.setVisibility(View.INVISIBLE);
+        w3.setVisibility(View.INVISIBLE);
+        w4.setVisibility(View.INVISIBLE);
+
+        setSelectedWeapon(-1);
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE); // the results will be higher than using the activity context object or the getWindowManager() shortcut
+        wm.getDefaultDisplay().getMetrics(displayMetrics);
+        screenWidth = displayMetrics.widthPixels;
+        screenHeight = displayMetrics.heightPixels;
+
+
     }
 
     @Override
@@ -132,7 +161,39 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
 
-        if (circleFlag){
+        if (tracking){
+
+            if (paused){
+
+                pauseTimer--;
+
+                final TextView pauseLabel = (TextView)findViewById(R.id.tv_countTime);
+                final String outString = "Tracking will resume in: " + Integer.toString(pauseTimer) + " Frames\nPlease Center Camera Above Grid";
+
+                if (pauseTimer < 0){
+                    pauseTimer = PAUSE_TIME;
+                    paused = false;
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pauseLabel.setVisibility(View.INVISIBLE);
+                        }
+                    });
+
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pauseLabel.setVisibility(View.VISIBLE);
+                            pauseLabel.setText(outString);
+                        }
+                    });
+
+                    return inputFrame.rgba();
+                }
+
+            }
 
             Mat col = inputFrame.rgba();
             Mat secondary = new Mat();
@@ -161,14 +222,20 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
     public void toggleTracking(View view) {
 
-        if (circleFlag){
-            circleFlag = false;
+        if (paused){
+            paused = false;
+            pauseTimer = PAUSE_TIME;
+            TextView pauseLabel = (TextView)findViewById(R.id.tv_countTime);
+            pauseLabel.setVisibility(View.INVISIBLE);
+        }
+
+        if (tracking){
+            tracking = false;
         } else {
-            circleFlag = true;
+            tracking = true;
             init();
         }
     }
-
 
     public void toggleGridType(View view) {
 
@@ -176,13 +243,62 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             gridToggle = ATTACK;
             Button toggleButton = (Button)findViewById(R.id.bt_swapGridType);
             toggleButton.setText("Attack");
+
+            Button w1 = (Button)findViewById(R.id.bt_selWeapon1);
+            Button w2 = (Button)findViewById(R.id.bt_selWeapon2);
+            Button w3 = (Button)findViewById(R.id.bt_selWeapon3);
+            Button w4 = (Button)findViewById(R.id.bt_selWeapon4);
+
+            Token selectedToken = tokenList.get(selToken);
+
+            if (!selectedToken.w1.name.equals("")) {
+                w1.setVisibility(View.VISIBLE);
+            } else {
+                w1.setVisibility(View.INVISIBLE);
+            }
+
+            if (!selectedToken.w2.name.equals("")) {
+                w2.setVisibility(View.VISIBLE);
+            } else {
+                w2.setVisibility(View.INVISIBLE);
+            }
+
+            if (!selectedToken.w3.name.equals("")) {
+                w3.setVisibility(View.VISIBLE);
+            } else {
+                w3.setVisibility(View.INVISIBLE);
+            }
+
+            if (!selectedToken.w4.name.equals("")) {
+                w4.setVisibility(View.VISIBLE);
+            } else {
+                w4.setVisibility(View.INVISIBLE);
+            }
+
         } else {
             gridToggle = MOVEMENT;
             Button toggleButton = (Button)findViewById(R.id.bt_swapGridType);
             toggleButton.setText("Move");
+
+            Button w1 = (Button)findViewById(R.id.bt_selWeapon1);
+            Button w2 = (Button)findViewById(R.id.bt_selWeapon2);
+            Button w3 = (Button)findViewById(R.id.bt_selWeapon3);
+            Button w4 = (Button)findViewById(R.id.bt_selWeapon4);
+            w1.setVisibility(View.INVISIBLE);
+            w2.setVisibility(View.INVISIBLE);
+            w3.setVisibility(View.INVISIBLE);
+            w4.setVisibility(View.INVISIBLE);
+
+            setSelectedWeapon(-1);
+
         }
 
         setDisplayType(gridToggle);
+
+    }
+
+    public void toggleBlastTemplate(View view) {
+
 
     }
 
@@ -343,30 +459,43 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         return out;
     }
 
+    public void selWeapon1(View view) {
+        setSelectedWeapon(1);
+    }
+
+    public void selWeapon2(View view) {
+        setSelectedWeapon(2);
+    }
+
+    public void selWeapon3(View view) {
+        setSelectedWeapon(3);
+    }
+
+    public void selWeapon4(View view) {
+        setSelectedWeapon(4);
+    }
+
     public void onActivityResult(int req, int res, Intent in){
         setContentView(R.layout.activity_main);
 
         if (req == REQUEST_GRID_MENU){
-
             if (in.getBooleanExtra("saved", false)){
                 x = in.getIntExtra("x",10);
                 y = in.getIntExtra("y",10);
 
                 adjustGridDimensions(x,y);
             }
-
         }
 
         if (req == REQUEST_TOKEN_MENU){
-
             int selectedID = in.getIntExtra("selectedToken", -1);
-
+            setSelectedWeapon(-1);
 
             String out = setTokenString(tokenList);
             setTokenList(out);
             setSelectedToken(selectedID);
+            selToken = selectedID;
         }
-
 
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.tutorial1_activity_java_surface_view);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
@@ -374,7 +503,79 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         //mOpenCvCameraView.setMaxFrameSize(848, 480);
         mOpenCvCameraView.enableView();
 
+        if (gridToggle == ATTACK) {
+            Button toggleButton = (Button)findViewById(R.id.bt_swapGridType);
+            toggleButton.setText("Attack");
+
+            Button w1 = (Button)findViewById(R.id.bt_selWeapon1);
+            Button w2 = (Button)findViewById(R.id.bt_selWeapon2);
+            Button w3 = (Button)findViewById(R.id.bt_selWeapon3);
+            Button w4 = (Button)findViewById(R.id.bt_selWeapon4);
+
+            Token selectedToken = tokenList.get(selToken);
+
+            if (!selectedToken.w1.name.equals("")) {
+                w1.setVisibility(View.VISIBLE);
+            } else {
+                w1.setVisibility(View.INVISIBLE);
+            }
+
+            if (!selectedToken.w2.name.equals("")) {
+                w2.setVisibility(View.VISIBLE);
+            } else {
+                w2.setVisibility(View.INVISIBLE);
+            }
+
+            if (!selectedToken.w3.name.equals("")) {
+                w3.setVisibility(View.VISIBLE);
+            } else {
+                w3.setVisibility(View.INVISIBLE);
+            }
+
+            if (!selectedToken.w4.name.equals("")) {
+                w4.setVisibility(View.VISIBLE);
+            } else {
+                w4.setVisibility(View.INVISIBLE);
+            }
+
+        } else {
+            Button toggleButton = (Button)findViewById(R.id.bt_swapGridType);
+            toggleButton.setText("Move");
+
+            Button w1 = (Button)findViewById(R.id.bt_selWeapon1);
+            Button w2 = (Button)findViewById(R.id.bt_selWeapon2);
+            Button w3 = (Button)findViewById(R.id.bt_selWeapon3);
+            Button w4 = (Button)findViewById(R.id.bt_selWeapon4);
+            w1.setVisibility(View.INVISIBLE);
+            w2.setVisibility(View.INVISIBLE);
+            w3.setVisibility(View.INVISIBLE);
+            w4.setVisibility(View.INVISIBLE);
+
+            setSelectedWeapon(-1);
+        }
+
+        paused = true;
+
     }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        int x = (int)event.getX();
+        int y = (int)event.getY();
+
+        int realX = 0;
+        int realY = 0;
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                realX = (x * 720) / screenWidth;
+                realY = (y * 480) / screenHeight;
+                setTouchPos(realX, realY);
+        }
+        return false;
+    }
+
 
     public native void detectMarkers(long image_final,long image_editable);
     public native void adjustGridDimensions(int x,int y);
@@ -382,6 +583,8 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     public native void setTokenList(String tokenListString);
     public native void setDisplayType(int type);
     public native void setSelectedToken(int selectedTokenID);
+    public native void setSelectedWeapon(int selectedWeapon);
+    public native void setTouchPos(int x, int y);
     public native void init();
 
 }

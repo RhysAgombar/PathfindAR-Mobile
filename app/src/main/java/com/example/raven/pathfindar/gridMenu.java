@@ -43,7 +43,9 @@ public class gridMenu extends MainActivity {
     }
 
     public void decrementVert(View view) {
-        y--;
+        if (y > 1){
+            y--;
+        }
         TextView yLabel = (TextView) findViewById(R.id.tv_numV);
         yLabel.setText(Integer.toString(y));
     }
@@ -55,7 +57,9 @@ public class gridMenu extends MainActivity {
     }
 
     public void decrementHoriz(View view) {
-        x--;
+        if (x > 1){
+            x--;
+        }
         TextView xLabel = (TextView) findViewById(R.id.tv_numH);
         xLabel.setText(Integer.toString(x));
     }

@@ -174,7 +174,9 @@ public class tokenEditMenu extends MainActivity{
 
     public void decrementRange1(View view) {
         TextView w1Range = (TextView)findViewById(R.id.tv_numW1);
-        selectedToken.w1.range -= 5;
+        if (selectedToken.w1.range > 0){
+            selectedToken.w1.range -= 5;
+        }
         w1Range.setText(Integer.toString(selectedToken.w1.range));
     }
 
@@ -186,7 +188,9 @@ public class tokenEditMenu extends MainActivity{
 
     public void decrementRange2(View view) {
         TextView w2Range = (TextView)findViewById(R.id.tv_numW2);
-        selectedToken.w2.range -= 5;
+        if (selectedToken.w2.range > 0){
+            selectedToken.w2.range -= 5;
+        }
         w2Range.setText(Integer.toString(selectedToken.w2.range));
     }
 
@@ -198,7 +202,9 @@ public class tokenEditMenu extends MainActivity{
 
     public void decrementRange3(View view) {
         TextView w3Range = (TextView)findViewById(R.id.tv_numW3);
-        selectedToken.w3.range -= 5;
+        if (selectedToken.w3.range > 0){
+            selectedToken.w3.range -= 5;
+        }
         w3Range.setText(Integer.toString(selectedToken.w3.range));
     }
 
@@ -210,7 +216,9 @@ public class tokenEditMenu extends MainActivity{
 
     public void decrementRange4(View view) {
         TextView w4Range = (TextView)findViewById(R.id.tv_numW4);
-        selectedToken.w4.range -= 5;
+        if (selectedToken.w4.range > 0){
+            selectedToken.w4.range -= 5;
+        }
         w4Range.setText(Integer.toString(selectedToken.w4.range));
     }
 
@@ -222,7 +230,9 @@ public class tokenEditMenu extends MainActivity{
 
     public void decrementMovement(View view) {
         TextView moveRange = (TextView)findViewById(R.id.tv_numMR);
-        selectedToken.mRange -= 5;
+        if (selectedToken.mRange > 0){
+            selectedToken.mRange -= 5;
+        }
         moveRange.setText(Integer.toString(selectedToken.mRange));
     }
 

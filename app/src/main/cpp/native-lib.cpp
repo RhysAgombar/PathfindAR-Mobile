@@ -28,6 +28,7 @@ int** gridCount; //gridCount[11][11];
 
 std::vector<cv::Point> squaresToColour;
 int selectedID = -1;
+int selectedWeapon = -1;
 
 int gridType = 0;
 static const int MOVEMENT = 0;
@@ -465,6 +466,10 @@ cv::Point **vLines;
 arMarker arUco[4];
 bool start;
 
+
+cv::Point touchPoint;
+
+
 class Weapon {
 public:
     std::string name = "";
@@ -518,6 +523,7 @@ public:
 
 int idGen = 0;
 std::vector<Token> tokenVec;
+std::vector<Token> psuedoTokenVec;
 std::vector<cv::Point> uTokens;
 cv::RNG rng(12345);
 
@@ -668,7 +674,7 @@ cv::Point getCenter(std::vector<cv::Point> contour) {
     int minY = 1e9;
     int maxY = -1;
 
-    int boundXmin = 1e9, boundXmax = -1; // Bounding box around the aruco markers to avoid contours outside the grid from being counted
+    int boundXmin = 1e9, boundXmax = -1; // Bounding box around the aruco markers to avoid contours outside the grid from being counted - Improves accuracy and performance
     int boundYmin = 1e9, boundYmax = -1;
 
     for (int i = 0; i < 4; i++){
@@ -743,13 +749,6 @@ void idTokens() {
             }
         }
 
-        if (uTokens.size() > 5) {
-
-            int k = 0;
-            k++;
-
-        }
-
         for (int k = 0; k < uTokens.size(); k++) {
             float dist = 1e9;
             int pos = -1;
@@ -811,8 +810,8 @@ void idTokens() {
         if (tokenVec.at(i).found == true) {
             tokenVec.at(i).lifespan++;
 
-            if (tokenVec.at(i).lifespan > 100) {
-                tokenVec.at(i).lifespan = 100;
+            if (tokenVec.at(i).lifespan > 50) {
+                tokenVec.at(i).lifespan = 50;
             }
 
         }
@@ -933,42 +932,85 @@ void findTokens(cv::Mat imageCopy, cv::Mat imageOut) {
             }
         }
 
-       cv::circle(imageOut, cent, 5, cv::Scalar(255, 0, 255), -1);
+       //cv::circle(imageOut, cent, 5, cv::Scalar(255, 0, 255), -1);
 
     }
+
 
     bool pauseTracking = false;
     float squareAverage = 0;
+    bool flag;
 
-    idTokens();
 
-    uTokens.clear();
+    for (int i = 0; i < uTokens.size(); i++){
+        flag = true;
+        Token nTok;
+        nTok.location = uTokens.at(i);
+        for (int j = 0; j < psuedoTokenVec.size(); j++){
+            if (nTok.location == psuedoTokenVec.at(j).location){
+                flag = false;
+            }
+        }
 
-    pauseTracking = false;
-
-    /*cv::Mat hMat;
-    imageOut.copyTo(hMat);
-
-    for (int i = 0; i < tokenVec.size(); i++) {
-
-        int j = tokenVec.at(i).location.x;
-        int k = tokenVec.at(i).location.y;
-
-        cv::Point polyPoints[1][4];
-        polyPoints[0][0] = grid[j][k].corner[0];
-        polyPoints[0][1] = grid[j][k].corner[1];
-        polyPoints[0][2] = grid[j][k].corner[2];
-        polyPoints[0][3] = grid[j][k].corner[3];
-
-        const cv::Point* ppt[1] = { polyPoints[0] };
-        int npt[] = { 4 };
-
-        cv::fillPoly(imageOut, ppt, npt, 1, tokenVec.at(i).colour);
+        if (flag){
+            psuedoTokenVec.push_back(nTok);
+        }
     }
 
-    addWeighted( imageOut, alpha, hMat, 1.0 - alpha, 0.0, imageOut); */
 
-    //cv::imshow("Contour Centers", drawing);
+    for (int i = 0; i < psuedoTokenVec.size(); i++){
+        flag = false;
+        for (int j = 0; j < uTokens.size(); j++){
+            if (uTokens.at(j) == psuedoTokenVec.at(i).location){
+                psuedoTokenVec.at(i).lifespan++;
+                flag = true;
+            }
+        }
+        if (!flag){
+
+            if (psuedoTokenVec.at(i).lifespan > 7){
+                psuedoTokenVec.at(i).lifespan = 7;
+            }
+            psuedoTokenVec.at(i).lifespan--;
+
+
+            //psuedoTokenVec.at(i).lifespan = -1;
+        }
+    }
+
+    /*
+
+             if (psuedoTokenVec.at(i).lifespan > 5){
+            psuedoTokenVec.at(i).lifespan = 5;
+        } else {
+            psuedoTokenVec.at(i).lifespan--;
+        }
+
+ */
+
+    std::vector<Token> psuedoHolder;
+
+    for (int i = 0; i < psuedoTokenVec.size(); i++){
+        if (psuedoTokenVec.at(i).lifespan >= 0){
+            psuedoHolder.push_back(psuedoTokenVec.at(i));
+        }
+    }
+
+    psuedoTokenVec.clear();
+    for (int i = 0; i < psuedoHolder.size(); i++){
+        psuedoTokenVec.push_back(psuedoHolder.at(i));
+    }
+    psuedoHolder.clear();
+
+    uTokens.clear();
+    for (int i = 0; i < psuedoTokenVec.size(); i++){
+        if (psuedoTokenVec.at(i).lifespan > 7){
+            uTokens.push_back(psuedoTokenVec.at(i).location);
+        }
+    }
+
+    idTokens();
+    uTokens.clear();
 
 }
 
@@ -1116,7 +1158,7 @@ void colourRange(int id, double alpha, cv::Mat finalMat){
     int exclusion = 0;
     cv::Scalar colour[6];
     colour[0] = cv::Scalar(15, 169, 15);
-    colour[1] = cv::Scalar(255, 0, 0);
+    colour[1] = cv::Scalar(255, 0, 0);  // Tried with a gradiant before. The transparency made it difficult to distinguish colours without having them be vastly different. Having them vastly different looked terrible, so I chose to use a light and a much darker shade of red, alternating.
     colour[2] = cv::Scalar(150, 0, 0);
     colour[3] = cv::Scalar(255, 0, 0);
     colour[4] = cv::Scalar(150, 0, 0);
@@ -1125,45 +1167,64 @@ void colourRange(int id, double alpha, cv::Mat finalMat){
     //colour[4] = cv::Scalar(84, 202, 0);
     //colour[5] = cv::Scalar(232,44,15);
 
+    Weapon selWeapon;
+    bool noWeapon = true;
+
+    int test = selectedWeapon;
+
+    if (selectedWeapon == 1) {
+        noWeapon = false;
+        selWeapon = selToken.w1;
+    } else if (selectedWeapon == 2) {
+        noWeapon = false;
+        selWeapon = selToken.w2;
+    } else if (selectedWeapon == 3) {
+        noWeapon = false;
+        selWeapon = selToken.w3;
+    } else if (selectedWeapon == 4) {
+        noWeapon = false;
+        selWeapon = selToken.w4;
+    }
+
     if (gridType == ATTACK) {
-        if (selToken.w1.reach) {
-            exclusion = 5;
-        }
-
-        cv::Mat hMat;
-        finalMat.copyTo(hMat);
-
-        int itterations = 0;
-        if (selToken.w1.ranged){
-            itterations = 4; //  5 itterations total - Technically, for projectile weapons, you can shoot up to 10 (only 5 for thrown), but that will put you well off the battle mat, considering most are at least 15ft range.
-        }
-
-        for (int l = itterations; l >= 0; l--){
-            if (l == 0) {
-                squaresToColour = colourRadiusFromSquare(np,selToken.w1.range, 0);
-            } else {
-                squaresToColour = colourRadiusFromSquare(np,selToken.w1.range * (l + 1), selToken.w1.range * (l));
+        if (!noWeapon) {
+            if (selWeapon.reach) {
+                exclusion = 5;
             }
 
-            if (squaresToColour.size() > 0){
-                for (int i = 0; i < squaresToColour.size(); i++){
-                    int j = 0, k = 0;
-                    j = squaresToColour.at(i).x;
-                    k = squaresToColour.at(i).y;
+            cv::Mat hMat;
+            finalMat.copyTo(hMat);
 
-                    if (j >= 0 && j <= vSize){
-                        if (k >= 0 && k <= hSize){
-                            grid[j][k].shadeSquare(finalMat, colour[l + 1]);
+            int itterations = 0;
+            if (selWeapon.ranged){
+                itterations = 4; //  5 itterations total - Technically, for projectile weapons, you can shoot up to 10 (only 5 for thrown), but that will put you well off the battle mat, considering most are at least 15ft range.
+            }
+
+            for (int l = itterations; l >= 0; l--){ // This needs to be optimized... baddly.
+                if (l == 0) {
+                    squaresToColour = colourRadiusFromSquare(np,selWeapon.range, exclusion);
+                } else {
+                    squaresToColour = colourRadiusFromSquare(np,selWeapon.range * (l + 1), selWeapon.range * (l));
+                }
+
+                if (squaresToColour.size() > 0){
+                    for (int i = 0; i < squaresToColour.size(); i++){
+                        int j = 0, k = 0;
+                        j = squaresToColour.at(i).x;
+                        k = squaresToColour.at(i).y;
+
+                        if (j >= 0 && j <= vSize){
+                            if (k >= 0 && k <= hSize){
+                                grid[j][k].shadeSquare(finalMat, colour[l + 1]);
+                            }
                         }
-                    }
 
+                    }
                 }
             }
+
+            addWeighted( finalMat, alpha, hMat, 1.0 - alpha, 0.0, finalMat);
         }
-
-        addWeighted( finalMat, alpha, hMat, 1.0 - alpha, 0.0, finalMat);
-
-
     } else {
         squaresToColour = colourRadiusFromSquare(np,selToken.mRange, exclusion);
 
@@ -1251,6 +1312,8 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
 
     }
 
+    cv::circle(finalMat, touchPoint, 5, cv::Scalar(255, 0, 0), -1);
+
     cv::resize(inMat, inMat, cv::Size(1280, 720), 0, 0, cv::INTER_CUBIC);
     cv::resize(finalMat, finalMat, cv::Size(1280, 720), 0, 0, cv::INTER_CUBIC);
 
@@ -1267,8 +1330,21 @@ Java_com_example_raven_pathfindar_MainActivity_adjustGridDimensions(JNIEnv *env,
 
 extern "C"
 void
+Java_com_example_raven_pathfindar_MainActivity_setTouchPos(JNIEnv *env, jobject instance, jint x, jint y) {
+    touchPoint.y = y;
+    touchPoint.x = x;
+}
+
+extern "C"
+void
 Java_com_example_raven_pathfindar_MainActivity_setSelectedToken(JNIEnv *env, jobject instance, jint tokenID) {
     selectedID = tokenID;
+}
+
+extern "C"
+void
+Java_com_example_raven_pathfindar_MainActivity_setSelectedWeapon(JNIEnv *env, jobject instance, jint weaponID) {
+    selectedWeapon = weaponID;
 }
 
 extern "C"

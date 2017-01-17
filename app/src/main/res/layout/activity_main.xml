@@ -2,7 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:opencv="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:focusable="true" >
 
     <org.opencv.android.JavaCameraView
         android:layout_width="match_parent"
@@ -12,11 +13,20 @@
         opencv:show_fps="true"
         opencv:camera_id="any" />
 
+    <TextView
+        android:id="@+id/tv_countTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:layout_gravity="center"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:textSize="20dp"/>
+
     <Button
         android:id="@+id/btn_tracking"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|bottom"
         android:text="Toggle Tracking"
         android:onClick="toggleTracking"/>
 
@@ -26,9 +36,17 @@
         android:layout_gravity="bottom">
 
         <Button
+            android:id="@+id/bt_blastTemplate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Blast"
+            android:onClick="toggleBlastTemplate"/>
+
+        <Button
             android:id="@+id/bt_swapGridType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/bt_blastTemplate"
             android:text="Move"
             android:onClick="toggleGridType"/>
 
@@ -55,6 +73,46 @@
             android:layout_below="@id/bt_gridMen"
             android:text="Tokens"
             android:onClick="openTokenMenu"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
+
+        <Button
+            android:id="@+id/bt_selWeapon1"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentStart="true"
+            android:text="1"
+            android:onClick="selWeapon1"/>
+
+        <Button
+            android:id="@+id/bt_selWeapon2"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_toRightOf="@id/bt_selWeapon1"
+            android:text="2"
+            android:onClick="selWeapon2"/>
+
+        <Button
+            android:id="@+id/bt_selWeapon3"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_toRightOf="@id/bt_selWeapon2"
+            android:text="3"
+            android:onClick="selWeapon3"/>
+
+        <Button
+            android:id="@+id/bt_selWeapon4"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_toRightOf="@id/bt_selWeapon3"
+            android:text="4"
+            android:onClick="selWeapon4"/>
+
 
     </RelativeLayout>
 
