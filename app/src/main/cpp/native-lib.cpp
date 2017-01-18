@@ -34,6 +34,10 @@ int gridType = 0;
 static const int MOVEMENT = 0;
 static const int ATTACK = 1;
 
+static const int LINE = 0;
+static const int CONE = 1;
+static const int SPHERE = 2;
+static const int CUBE = 3;
 
 class gridSquare {
 public:
@@ -467,7 +471,7 @@ arMarker arUco[4];
 bool start;
 
 
-cv::Point touchPoint;
+cv::Point touchPoint = cv::Point(-1,-1);
 
 
 class Weapon {
@@ -1252,6 +1256,466 @@ void colourRange(int id, double alpha, cv::Mat finalMat){
 
 }
 
+cv::Point3i intersection = cv::Point3i(-1,-1,-1);
+cv::Point selSquare = cv::Point(-1,-1);
+void drawBlastTemplate(cv::Mat inMat, int type, int size, float alpha){
+
+    cv::Point square;
+    square.x = -1;
+    square.y = -1;
+
+    //squaresToColour.clear();
+
+    if (type == SPHERE) {
+
+        float dist = 1e9;
+        cv::Point3i inter;
+
+        if (intersection.x == -1) {
+            bool flag = false;
+
+            for (int i = 0; i < hSize; i++) {
+                for (int j = 0; j < vSize; j++) {
+                    if (grid[i][j].contains(touchPoint)) {
+
+                        for (int k = 0; k < 4; k++) {
+                            float hold = distance(touchPoint, grid[i][j].corner[k]);
+
+                            if (dist > hold) {
+                                dist = hold;
+                                inter = cv::Point3d(i, j, k);
+                            }
+
+                        }
+
+                        flag = true;
+                        break;
+                    }
+                }
+                if (flag) {
+                    break;
+                }
+            }
+
+            intersection = cv::Point3i(inter.x, inter.y, inter.z);
+        }
+
+        inter.x = intersection.x;
+        inter.y = intersection.y;
+        inter.z = intersection.z;
+
+        cv::circle(inMat, grid[inter.x][inter.y].corner[inter.z], 5, cv::Scalar(255, 0, 0), -1);
+        std::vector<cv::Point> startPos;
+
+        if (inter.z == 0) {
+            // Bottom Right
+            startPos.push_back(cv::Point(inter.x - 1, inter.y - 1));
+            startPos.push_back(cv::Point(inter.x - 1, inter.y));
+            startPos.push_back(cv::Point(inter.x, inter.y));
+            startPos.push_back(cv::Point(inter.x, inter.y - 1));
+        } else if (inter.z == 1) {
+            // Bottom Left
+            startPos.push_back(cv::Point(inter.x - 1, inter.y));
+            startPos.push_back(cv::Point(inter.x - 1, inter.y + 1));
+            startPos.push_back(cv::Point(inter.x, inter.y + 1));
+            startPos.push_back(cv::Point(inter.x, inter.y));
+        } else if (inter.z == 2) {
+            // Top Left
+            startPos.push_back(cv::Point(inter.x, inter.y));
+            startPos.push_back(cv::Point(inter.x, inter.y + 1));
+            startPos.push_back(cv::Point(inter.x + 1, inter.y + 1));
+            startPos.push_back(cv::Point(inter.x + 1, inter.y));
+        } else if (inter.z == 3) {
+            // Top Right
+            startPos.push_back(cv::Point(inter.x, inter.y - 1));
+            startPos.push_back(cv::Point(inter.x, inter.y));
+            startPos.push_back(cv::Point(inter.x + 1, inter.y));
+            startPos.push_back(cv::Point(inter.x + 1, inter.y - 1));
+        }
+
+        int radius = size / 5; // Convert from ft. to squares
+
+        double countRadius = 0.0;
+
+        int diagonal = 0;
+        int holder = 0;
+
+        cv::Point pos = startPos.at(1);
+        std::vector<cv::Point> positions;
+
+        while (floor(countRadius + 1.5) <= radius) {
+            countRadius += 1.5;
+            diagonal++;
+        }
+
+        // Upper Right
+        holder = diagonal;
+        while (diagonal >= 0) {
+            cv::Point current;
+            current.x = pos.x - diagonal;
+            current.y = pos.y + diagonal;
+
+            positions.push_back(current);
+
+            countRadius = 1.5 * diagonal;
+
+            while (countRadius < radius) {
+                countRadius += 1.0;
+                current.x -= 1;
+                positions.push_back(current);
+            }
+
+            diagonal--;
+        }
+
+        diagonal = holder;
+        while (diagonal >= 0) {
+            cv::Point current;
+            current.x = pos.x - diagonal;
+            current.y = pos.y + diagonal;
+
+            positions.push_back(current);
+
+            countRadius = 1.5 * diagonal;
+
+            while (countRadius < radius) {
+                countRadius += 1.0;
+                current.y += 1;
+                positions.push_back(current);
+            }
+
+            diagonal--;
+        }
+
+        // Lower Right
+        pos = startPos.at(2);
+        diagonal = holder;
+        while (diagonal >= 0) {
+            cv::Point current;
+            current.x = pos.x + diagonal;
+            current.y = pos.y + diagonal;
+
+            positions.push_back(current);
+
+            countRadius = 1.5 * diagonal;
+
+            while (countRadius < radius) {
+                countRadius += 1.0;
+                current.x += 1;
+                positions.push_back(current);
+            }
+
+            diagonal--;
+        }
+
+        diagonal = holder;
+        while (diagonal >= 0) {
+            cv::Point current;
+            current.x = pos.x + diagonal;
+            current.y = pos.y + diagonal;
+
+
+            positions.push_back(current);
+
+            countRadius = 1.5 * diagonal;
+
+            while (countRadius < radius) {
+                countRadius += 1.0;
+                current.y += 1;
+
+                positions.push_back(current);
+            }
+
+            diagonal--;
+        }
+
+
+        // Lower Left
+        pos = startPos.at(3);
+        diagonal = holder;
+        while (diagonal >= 0) {
+            cv::Point current;
+            current.x = pos.x + diagonal;
+            current.y = pos.y - diagonal;
+
+            positions.push_back(current);
+
+            countRadius = 1.5 * diagonal;
+
+            while (countRadius < radius) {
+                countRadius += 1.0;
+                current.x += 1;
+                positions.push_back(current);
+            }
+            diagonal--;
+        }
+
+        diagonal = holder;
+        while (diagonal >= 0) {
+            cv::Point current;
+            current.x = pos.x + diagonal;
+            current.y = pos.y - diagonal;
+
+            positions.push_back(current);
+
+            countRadius = 1.5 * diagonal;
+
+            while (countRadius < radius) {
+                countRadius += 1.0;
+                current.y -= 1;
+                positions.push_back(current);
+            }
+
+            diagonal--;
+        }
+
+        // Upper Left
+        pos = startPos.at(0);
+        diagonal = holder;
+        while (diagonal >= 0) {
+            cv::Point current;
+            current.x = pos.x - diagonal;
+            current.y = pos.y - diagonal;
+
+            positions.push_back(current);
+
+            countRadius = 1.5 * diagonal;
+
+            while (countRadius < radius) {
+                countRadius += 1.0;
+                current.x -= 1;
+                positions.push_back(current);
+            }
+
+            diagonal--;
+        }
+
+        diagonal = holder;
+        while (diagonal >= 0) {
+            cv::Point current;
+            current.x = pos.x - diagonal;
+            current.y = pos.y - diagonal;
+
+            positions.push_back(current);
+
+            countRadius = 1.5 * diagonal;
+
+            while (countRadius < radius) {
+                countRadius += 1.0;
+                current.y -= 1;
+                positions.push_back(current);
+            }
+
+            diagonal--;
+        }
+
+
+        cv::Mat hMat;
+        inMat.copyTo(hMat);
+
+        for (int i = 0; i < positions.size(); i++) {
+            int j = 0, k = 0;
+            j = positions.at(i).x;
+            k = positions.at(i).y;
+
+            if (j >= 0 && j <= vSize) {
+                if (k >= 0 && k <= hSize) {
+                    grid[j][k].shadeSquare(inMat, cv::Scalar(255, 140, 0));
+                }
+            }
+        }
+
+        addWeighted(inMat, alpha, hMat, 1.0 - alpha, 0.0, inMat);
+
+    } else if (type == CONE){
+
+        if (selectedID == -1){
+            return;
+        }
+
+        Token selToken;
+
+        for (int i = 0; i < tokenVec.size(); i++){
+            if (tokenVec.at(i).id == selectedID){
+                selToken = tokenVec.at(i);
+            }
+        }
+
+        if (selSquare.x == -1) {
+            bool flag = false;
+
+            for (int i = 0; i < hSize; i++) {
+                for (int j = 0; j < vSize; j++) {
+                    if (grid[i][j].contains(touchPoint)) {
+
+                        selSquare.x = i;
+                        selSquare.y = j;
+
+                        flag = true;
+                        break;
+                    }
+                }
+                if (flag) {
+                    break;
+                }
+            }
+        }
+
+        std::vector<cv::Point> startPos;
+        startPos.push_back(cv::Point(selToken.location.x - 3, selToken.location.y - 3));
+        startPos.push_back(cv::Point(selToken.location.x - 3, selToken.location.y));
+        startPos.push_back(cv::Point(selToken.location.x - 3, selToken.location.y + 3));
+        startPos.push_back(cv::Point(selToken.location.x, selToken.location.y + 3));
+        startPos.push_back(cv::Point(selToken.location.x + 3, selToken.location.y + 3));
+        startPos.push_back(cv::Point(selToken.location.x + 3, selToken.location.y));
+        startPos.push_back(cv::Point(selToken.location.x + 3, selToken.location.y - 3));
+        startPos.push_back(cv::Point(selToken.location.x, selToken.location.y - 3));
+
+        float dist = 1e9;
+        cv::Point startDir;
+
+        for (int i = 0; i < startPos.size(); i++){
+            float holder = distance(startPos.at(i), selSquare);
+            if (holder < dist) {
+                dist = holder;
+                startDir = cv::Point(startPos.at(i).x - selToken.location.x, startPos.at(i).y - selToken.location.y);
+            }
+        }
+
+        cv::Point startSquare = cv::Point(selToken.location.x, selToken.location.y);
+
+        int radius = size / 5; // Convert from ft. to squares
+
+        double countRadius = 0.0;
+
+        int diagonal = 0;
+        int holder = 0;
+        cv::Point pos;
+        std::vector<cv::Point> positions;
+
+        while (floor(countRadius + 1.5) <= radius) {
+            countRadius += 1.5;
+            diagonal++;
+        }
+
+        if (startDir.x < 0 && startDir.y < 0){
+            // Up and Left
+
+            pos = cv::Point(selToken.location.x - 1, selToken.location.y - 1);
+            diagonal = holder;
+            while (diagonal >= 0) {
+                cv::Point current;
+                current.x = pos.x - diagonal;
+                current.y = pos.y - diagonal;
+
+                positions.push_back(current);
+
+                countRadius = 1.5 * diagonal;
+
+                while (countRadius < radius) {
+                    countRadius += 1.0;
+                    current.x -= 1;
+                    positions.push_back(current);
+                }
+
+                diagonal--;
+            }
+
+            diagonal = holder;
+            while (diagonal >= 0) {
+                cv::Point current;
+                current.x = pos.x - diagonal;
+                current.y = pos.y - diagonal;
+
+                positions.push_back(current);
+
+                countRadius = 1.5 * diagonal;
+
+                while (countRadius < radius) {
+                    countRadius += 1.0;
+                    current.y -= 1;
+                    positions.push_back(current);
+                }
+
+                diagonal--;
+            }
+
+        } else if (startDir.x < 0 && startDir.y == 0){
+            // Up
+        } else if (startDir.x < 0 && startDir.y > 0){
+            // Up and Right
+        }
+
+
+
+
+        cv::Mat hMat;
+        inMat.copyTo(hMat);
+
+        for (int i = 0; i < positions.size(); i++) {
+            int j = 0, k = 0;
+            j = positions.at(i).x;
+            k = positions.at(i).y;
+
+            if (j >= 0 && j <= vSize) {
+                if (k >= 0 && k <= hSize) {
+                    grid[j][k].shadeSquare(inMat, cv::Scalar(255, 140, 0));
+                }
+            }
+        }
+
+        addWeighted(inMat, alpha, hMat, 1.0 - alpha, 0.0, inMat);
+
+
+    } else {
+        bool flag = false;
+        bool found = false;
+
+        for (int i = 0; i < hSize; i++){
+            for (int j = 0; j < vSize; j++){
+                if (grid[i][j].contains(touchPoint)){
+                    square.x = i;
+                    square.y = j;
+                    found = true;
+                    flag = true;
+                    break;
+                }
+            }
+            if (flag){
+                break;
+            }
+        }
+
+        if (!found){
+            touchPoint.x = -1;
+            touchPoint.y = -1;
+        } else {
+
+            cv::Mat hMat;
+            inMat.copyTo(hMat);
+
+            int j = 0, k = 0;
+            j = square.x;
+            k = square.y;
+
+            if (j >= 0 && j <= vSize){
+                if (k >= 0 && k <= hSize){
+                    grid[j][k].shadeSquare(inMat, cv::Scalar(255,140,0));
+                }
+            }
+
+            addWeighted( inMat, alpha, hMat, 1.0 - alpha, 0.0, inMat);
+
+
+        }
+
+    }
+
+
+
+
+}
+
 extern "C"
 void
 Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobject instance, jlong image_final, jlong image_editable) {
@@ -1312,7 +1776,14 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
 
     }
 
-    cv::circle(finalMat, touchPoint, 5, cv::Scalar(255, 0, 0), -1);
+    if (touchPoint.x != -1){
+        cv::circle(finalMat, touchPoint, 5, cv::Scalar(255, 0, 0), -1);
+        int t = CONE;
+
+        drawBlastTemplate(finalMat, t, 10, 0.5);
+    }
+
+
 
     cv::resize(inMat, inMat, cv::Size(1280, 720), 0, 0, cv::INTER_CUBIC);
     cv::resize(finalMat, finalMat, cv::Size(1280, 720), 0, 0, cv::INTER_CUBIC);
@@ -1333,6 +1804,11 @@ void
 Java_com_example_raven_pathfindar_MainActivity_setTouchPos(JNIEnv *env, jobject instance, jint x, jint y) {
     touchPoint.y = y;
     touchPoint.x = x;
+
+    intersection.x = -1;
+    intersection.y = -1;
+    selSquare.x = -1;
+    selSquare.y = -1;
 }
 
 extern "C"

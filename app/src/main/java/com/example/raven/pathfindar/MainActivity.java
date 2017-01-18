@@ -55,6 +55,12 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     private int selToken = -1;
 
     private boolean tracking = false;
+    private boolean blast = false;
+
+    public static final int LINE = 0;
+    public static final int CONE = 1;
+    public static final int SPHERE = 2;
+    public static final int CUBE = 3;
 
     private boolean paused = false;
     public static final int PAUSE_TIME = 150;
@@ -298,6 +304,12 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     }
 
     public void toggleBlastTemplate(View view) {
+        if (blast){
+            blast = false;
+        } else {
+            blast = true;
+        }
+
 
 
     }
@@ -560,6 +572,10 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
+        if (!blast){
+            return false;
+        }
 
         int x = (int)event.getX();
         int y = (int)event.getY();
