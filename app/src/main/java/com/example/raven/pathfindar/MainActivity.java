@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     public static final int CUBE = 3;
 
     private boolean paused = false;
-    public static final int PAUSE_TIME = 150;
+    public static final int PAUSE_TIME = 100;
     private int pauseTimer = PAUSE_TIME;
 
     private int x = 10, y = 10;
