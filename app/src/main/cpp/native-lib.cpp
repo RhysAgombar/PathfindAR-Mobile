@@ -1529,7 +1529,7 @@ void drawBlastTemplate(cv::Mat inMat, int type, int size, float alpha){
 
     } else if (type == CONE){
 
-        size -= 5;
+       // size -= 5;
 
         if (selectedID == -1){
             return;
@@ -1612,314 +1612,654 @@ void drawBlastTemplate(cv::Mat inMat, int type, int size, float alpha){
 
         int radius = size / 5; // Convert from ft. to squares
 
-        double countRadius = 0.0;
-
+        int countRadius = 0;
         int diagonal = 0;
         int holder = 0;
         cv::Point pos;
         std::vector<cv::Point> positions;
 
-        while (floor(countRadius + 1.5) <= radius) {
-            countRadius += 1.5;
-            diagonal++;
+        int counter = 0;
+        int add = 0;
+        while (true) {
+            if ((counter % 2) == 0){
+                add = 1;
+            } else {
+                add = 2;
+            }
+            if ((countRadius + add) > radius){
+                break;
+            } else {
+                countRadius += add;
+                diagonal++;
+                counter++;
+            }
         }
 
         switch (startDir) {
-            case 0: holder = diagonal; // Upper Left
+            case 0: { // Upper Left
                 pos = cv::Point(selToken.location.x - 1, selToken.location.y - 1);
 
-                while (diagonal >= 0) {
+                int count = 0;
+                int remaining = radius;
+                for (int i = 0; i < diagonal; i++){
                     cv::Point current;
-                    current.x = pos.x - diagonal;
-                    current.y = pos.y - diagonal;
+                    current.x = pos.x - i;
+                    current.y = pos.y - i;
 
                     positions.push_back(current);
 
-                    countRadius = 1.5 * diagonal;
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
 
-                    while (countRadius < radius) {
-                        countRadius += 1.0;
+                    for (int j = 1; j <= remaining; j++){
                         current.x -= 1;
                         positions.push_back(current);
                     }
 
-                    diagonal--;
+                    count++;
                 }
 
-                diagonal = holder;
-                while (diagonal >= 0) {
+                count = 0;
+                remaining = radius;
+                for (int i = 0; i < diagonal; i++){
                     cv::Point current;
-                    current.x = pos.x - diagonal;
-                    current.y = pos.y - diagonal;
+                    current.x = pos.x - i;
+                    current.y = pos.y - i;
 
                     positions.push_back(current);
 
-                    countRadius = 1.5 * diagonal;
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
 
-                    while (countRadius < radius) {
-                        countRadius += 1.0;
+                    for (int j = 1; j <= remaining; j++){
                         current.y -= 1;
                         positions.push_back(current);
                     }
 
-                    diagonal--;
+                    count++;
                 }
 
                 break;
+            }
                 ///////////////////////////////////
-            case 1: holder = diagonal; // Upper MLeft
+            case 1: { // Upper MLeft
                 pos = cv::Point(selToken.location.x - 1, selToken.location.y - 1);
-                while (diagonal >= 0) {
+
+                int count = 0;
+                int remaining = radius;
+                for (int i = 0; i < diagonal; i++){
                     cv::Point current;
-                    current.x = pos.x - diagonal;
-                    current.y = pos.y - diagonal;
+                    current.x = pos.x - i;
+                    current.y = pos.y - i;
 
                     positions.push_back(current);
 
-                    countRadius = 1.5 * diagonal;
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
 
-                    while ((countRadius + 0.5) < radius) {
-                        countRadius += 1.0;
+                    for (int j = 1; j <= remaining; j++){
                         current.x -= 1;
                         positions.push_back(current);
                     }
 
-                    diagonal--;
+                    count++;
                 }
 
-                diagonal = holder;
                 pos = cv::Point(selToken.location.x - 1, selToken.location.y);
-                while (diagonal >= 0) {
+
+                count = 0;
+                remaining = radius;
+                for (int i = 0; i < diagonal; i++){
                     cv::Point current;
-                    current.x = pos.x - diagonal;
-                    current.y = pos.y + diagonal;
+                    current.x = pos.x - i;
+                    current.y = pos.y + i;
 
                     positions.push_back(current);
 
-                    countRadius = 1.5 * diagonal;
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
 
-                    while ((countRadius + 0.5) < radius) {
-                        countRadius += 1.0;
+                    for (int j = 1; j <= remaining; j++){
                         current.x -= 1;
                         positions.push_back(current);
                     }
 
-                    diagonal--;
+                    count++;
                 }
 
                 break;
-                ///////////////////////////////////
-            case 2: holder = diagonal; // Upper MRight
+            }
+            case 2: { // Upper MRight
                 pos = cv::Point(selToken.location.x - 1, selToken.location.y);
-                while (diagonal >= 0) {
+
+                int count = 0;
+                int remaining = radius;
+                for (int i = 0; i < diagonal; i++){
                     cv::Point current;
-                    current.x = pos.x - diagonal;
-                    current.y = pos.y - diagonal;
+                    current.x = pos.x - i;
+                    current.y = pos.y - i;
 
                     positions.push_back(current);
 
-                    countRadius = 1.5 * diagonal;
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
 
-                    while ((countRadius + 0.5) < radius) {
-                        countRadius += 1.0;
+                    for (int j = 1; j <= remaining; j++){
                         current.x -= 1;
                         positions.push_back(current);
                     }
 
-                    diagonal--;
+                    count++;
                 }
 
-                diagonal = holder;
                 pos = cv::Point(selToken.location.x - 1, selToken.location.y + 1);
-                while (diagonal >= 0) {
+
+                count = 0;
+                remaining = radius;
+                for (int i = 0; i < diagonal; i++){
                     cv::Point current;
-                    current.x = pos.x - diagonal;
-                    current.y = pos.y + diagonal;
+                    current.x = pos.x - i;
+                    current.y = pos.y + i;
 
                     positions.push_back(current);
 
-                    countRadius = 1.5 * diagonal;
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
 
-                    while ((countRadius + 0.5) < radius) {
-                        countRadius += 1.0;
+                    for (int j = 1; j <= remaining; j++){
                         current.x -= 1;
                         positions.push_back(current);
                     }
 
-                    diagonal--;
+                    count++;
                 }
-
 
                 break;
-                ///////////////////////////////////
-            case 3: holder = diagonal; // Upper Right
+            }
+            case 3: { // Upper Right
                 pos = cv::Point(selToken.location.x - 1, selToken.location.y + 1);
 
-                while (diagonal >= 0) {
+                int count = 0;
+                int remaining = radius;
+                for (int i = 0; i < diagonal; i++){
                     cv::Point current;
-                    current.x = pos.x - diagonal;
-                    current.y = pos.y + diagonal;
+                    current.x = pos.x - i;
+                    current.y = pos.y + i;
 
                     positions.push_back(current);
 
-                    countRadius = 1.5 * diagonal;
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
 
-                    while (countRadius < radius){
-                        countRadius += 1.0;
+                    for (int j = 1; j <= remaining; j++){
                         current.x -= 1;
-
                         positions.push_back(current);
                     }
 
-                    diagonal--;
+                    count++;
                 }
 
-                diagonal = holder;
-                while (diagonal >= 0) {
+                count = 0;
+                remaining = radius;
+                for (int i = 0; i < diagonal; i++){
                     cv::Point current;
-                    current.x = pos.x - diagonal;
-                    current.y = pos.y + diagonal;
+                    current.x = pos.x - i;
+                    current.y = pos.y + i;
 
                     positions.push_back(current);
 
-                    countRadius = 1.5 * diagonal;
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
 
-                    while (countRadius < radius){
-                        countRadius += 1.0;
+                    for (int j = 1; j <= remaining; j++){
                         current.y += 1;
-
                         positions.push_back(current);
                     }
 
-                    diagonal--;
+                    count++;
                 }
+
                 break;
-                ///////////////////////////////////
-            case 4:
+            }
+            case 4: { // Right MUp
+                pos = cv::Point(selToken.location.x -1, selToken.location.y + 1);
+
+                int count = 0;
+                int remaining = radius;
+                for (int i = 0; i < diagonal; i++){
+                    cv::Point current;
+                    current.x = pos.x - i;
+                    current.y = pos.y + i;
+
+                    positions.push_back(current);
+
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
+
+                    for (int j = 1; j <= remaining; j++){
+                        current.y += 1;
+                        positions.push_back(current);
+                    }
+
+                    count++;
+                }
+
+                pos = cv::Point(selToken.location.x, selToken.location.y + 1);
+                count = 0;
+                remaining = radius;
+                for (int i = 0; i < diagonal; i++){
+                    cv::Point current;
+                    current.x = pos.x + i;
+                    current.y = pos.y + i;
+
+                    positions.push_back(current);
+
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
+
+                    for (int j = 1; j <= remaining; j++){
+                        current.y += 1;
+                        positions.push_back(current);
+                    }
+
+                    count++;
+                }
+
                 break;
-                ///////////////////////////////////
-            case 5:
+            }
+            case 5: { // Right MDown
+                pos = cv::Point(selToken.location.x, selToken.location.y + 1);
+
+                int count = 0;
+                int remaining = radius;
+                for (int i = 0; i < diagonal; i++){
+                    cv::Point current;
+                    current.x = pos.x - i;
+                    current.y = pos.y + i;
+
+                    positions.push_back(current);
+
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
+
+                    for (int j = 1; j <= remaining; j++){
+                        current.y += 1;
+                        positions.push_back(current);
+                    }
+
+                    count++;
+                }
+
+                pos = cv::Point(selToken.location.x + 1, selToken.location.y + 1);
+                count = 0;
+                remaining = radius;
+                for (int i = 0; i < diagonal; i++){
+                    cv::Point current;
+                    current.x = pos.x + i;
+                    current.y = pos.y + i;
+
+                    positions.push_back(current);
+
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
+
+                    for (int j = 1; j <= remaining; j++){
+                        current.y += 1;
+                        positions.push_back(current);
+                    }
+
+                    count++;
+                }
+
                 break;
-                ///////////////////////////////////
-            case 6: holder = diagonal; // Lower Right
+            }
+            case 6: { // Lower Right
                 pos = cv::Point(selToken.location.x + 1, selToken.location.y + 1);
 
-                while (diagonal >= 0) {
+                int count = 0;
+                int remaining = radius;
+                for (int i = 0; i < diagonal; i++){
                     cv::Point current;
-                    current.x = pos.x + diagonal;
-                    current.y = pos.y + diagonal;
+                    current.x = pos.x + i;
+                    current.y = pos.y + i;
 
                     positions.push_back(current);
 
-
-                    countRadius = 1.5 * diagonal;
-
-                    while (countRadius < radius){
-                        countRadius += 1.0;
-                        current.x += 1;
-
-                        positions.push_back(current);
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
                     }
 
-                    diagonal--;
-                }
-
-                diagonal = holder;
-                while (diagonal >= 0) {
-                    cv::Point current;
-                    current.x = pos.x + diagonal;
-                    current.y = pos.y + diagonal;
-
-                    positions.push_back(current);
-
-                    countRadius = 1.5 * diagonal;
-
-                    while (countRadius < radius){
-                        countRadius += 1.0;
+                    for (int j = 1; j <= remaining; j++){
                         current.y += 1;
-
                         positions.push_back(current);
                     }
 
-                    diagonal--;
+                    count++;
                 }
-                break;
-                ///////////////////////////////////
-            case 7:
-                break;
-                ///////////////////////////////////
-            case 8:
-                break;
-                ///////////////////////////////////
-            case 9: holder = diagonal; // Lower Left
-                pos = cv::Point(selToken.location.x + 1, selToken.location.y - 1);
-                while (diagonal >= 0) {
+
+                count = 0;
+                remaining = radius;
+                for (int i = 0; i < diagonal; i++){
                     cv::Point current;
-                    current.x = pos.x + diagonal;
-                    current.y = pos.y - diagonal;
+                    current.x = pos.x + i;
+                    current.y = pos.y + i;
 
                     positions.push_back(current);
 
-                    countRadius = 1.5 * diagonal;
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
 
-                    while (countRadius < radius){
-                        countRadius += 1.0;
+                    for (int j = 1; j <= remaining; j++){
                         current.x += 1;
-
                         positions.push_back(current);
                     }
 
-                    diagonal--;
+                    count++;
                 }
 
-                diagonal = holder;
-                while (diagonal >= 0) {
+                break;
+            }
+            case 7: { // Down MRight
+                pos = cv::Point(selToken.location.x + 1, selToken.location.y + 1);
+
+                int count = 0;
+                int remaining = radius;
+                for (int i = 0; i < diagonal; i++){
                     cv::Point current;
-                    current.x = pos.x + diagonal;
-                    current.y = pos.y - diagonal;
+                    current.x = pos.x + i;
+                    current.y = pos.y + i;
 
                     positions.push_back(current);
 
-                    countRadius = 1.5 * diagonal;
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
 
-                    while (countRadius < radius){
-                        countRadius += 1.0;
-                        current.y -= 1;
-
+                    for (int j = 1; j <= remaining; j++){
+                        current.x += 1;
                         positions.push_back(current);
                     }
 
-                    diagonal--;
+                    count++;
+                }
+
+                pos = cv::Point(selToken.location.x + 1, selToken.location.y);
+                count = 0;
+                remaining = radius;
+                for (int i = 0; i < diagonal; i++){
+                    cv::Point current;
+                    current.x = pos.x + i;
+                    current.y = pos.y - i;
+
+                    positions.push_back(current);
+
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
+
+                    for (int j = 1; j <= remaining; j++){
+                        current.x += 1;
+                        positions.push_back(current);
+                    }
+
+                    count++;
                 }
 
                 break;
-                ///////////////////////////////////
-            case 10:
+            }
+            case 8: { // Down MLeft
+                pos = cv::Point(selToken.location.x + 1, selToken.location.y);
+
+                int count = 0;
+                int remaining = radius;
+                for (int i = 0; i < diagonal; i++){
+                    cv::Point current;
+                    current.x = pos.x + i;
+                    current.y = pos.y + i;
+
+                    positions.push_back(current);
+
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
+
+                    for (int j = 1; j <= remaining; j++){
+                        current.x += 1;
+                        positions.push_back(current);
+                    }
+
+                    count++;
+                }
+
+                pos = cv::Point(selToken.location.x + 1, selToken.location.y - 1);
+                count = 0;
+                remaining = radius;
+                for (int i = 0; i < diagonal; i++){
+                    cv::Point current;
+                    current.x = pos.x + i;
+                    current.y = pos.y - i;
+
+                    positions.push_back(current);
+
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
+
+                    for (int j = 1; j <= remaining; j++){
+                        current.x += 1;
+                        positions.push_back(current);
+                    }
+
+                    count++;
+                }
+
                 break;
-                ///////////////////////////////////
-            case 11: int k = 0;
+            }
+            case 9: { // Lower Left
+                pos = cv::Point(selToken.location.x + 1, selToken.location.y - 1);
+
+                int count = 0;
+                int remaining = radius;
+                for (int i = 0; i < diagonal; i++){
+                    cv::Point current;
+                    current.x = pos.x + i;
+                    current.y = pos.y - i;
+
+                    positions.push_back(current);
+
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
+
+                    for (int j = 1; j <= remaining; j++){
+                        current.x += 1;
+                        positions.push_back(current);
+                    }
+
+                    count++;
+                }
+
+                count = 0;
+                remaining = radius;
+                for (int i = 0; i < diagonal; i++){
+                    cv::Point current;
+                    current.x = pos.x + i;
+                    current.y = pos.y - i;
+
+                    positions.push_back(current);
+
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
+
+                    for (int j = 1; j <= remaining; j++){
+                        current.y -= 1;
+                        positions.push_back(current);
+                    }
+
+                    count++;
+                }
+
                 break;
-                ///////////////////////////////////
+            }
+            case 10: { // Left MDown
+                pos = cv::Point(selToken.location.x + 1, selToken.location.y - 1);
+
+                int count = 0;
+                int remaining = radius;
+                for (int i = 0; i < diagonal; i++){
+                    cv::Point current;
+                    current.x = pos.x + i;
+                    current.y = pos.y - i;
+
+                    positions.push_back(current);
+
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
+
+                    for (int j = 1; j <= remaining; j++){
+                        current.y -= 1;
+                        positions.push_back(current);
+                    }
+
+                    count++;
+                }
+
+                pos = cv::Point(selToken.location.x, selToken.location.y - 1);
+                count = 0;
+                remaining = radius;
+                for (int i = 0; i < diagonal; i++){
+                    cv::Point current;
+                    current.x = pos.x - i;
+                    current.y = pos.y - i;
+
+                    positions.push_back(current);
+
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
+
+                    for (int j = 1; j <= remaining; j++){
+                        current.y -= 1;
+                        positions.push_back(current);
+                    }
+
+                    count++;
+                }
+
+                break;
+            }
+            case 11: { // Left MUp
+                pos = cv::Point(selToken.location.x, selToken.location.y - 1);
+
+                int count = 0;
+                int remaining = radius;
+                for (int i = 0; i < diagonal; i++){
+                    cv::Point current;
+                    current.x = pos.x + i;
+                    current.y = pos.y - i;
+
+                    positions.push_back(current);
+
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
+
+                    for (int j = 1; j <= remaining; j++){
+                        current.y -= 1;
+                        positions.push_back(current);
+                    }
+
+                    count++;
+                }
+
+                pos = cv::Point(selToken.location.x - 1, selToken.location.y - 1);
+                count = 0;
+                remaining = radius;
+                for (int i = 0; i < diagonal; i++){
+                    cv::Point current;
+                    current.x = pos.x - i;
+                    current.y = pos.y - i;
+
+                    positions.push_back(current);
+
+                    if ((count % 2) == 0){
+                        remaining -= 1;
+                    } else {
+                        remaining -= 2;
+                    }
+
+                    for (int j = 1; j <= remaining; j++){
+                        current.y -= 1;
+                        positions.push_back(current);
+                    }
+
+                    count++;
+                }
+
+                break;
+            }
         }
-
-
-
-        if (startDir == 0){
-            // Up and Left
-
-
-
-        } else if (startDir == 1){
-        } else if (startDir == 2){
-            // Up
-        } else if (startDir == 3){
-            // Up and Right
-
-
-        }
-
-
-
 
         cv::Mat hMat;
         inMat.copyTo(hMat);
