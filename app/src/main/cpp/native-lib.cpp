@@ -1150,11 +1150,17 @@ void init() {
 void colourRange(int id, double alpha, cv::Mat finalMat){
 
     Token selToken;
+    bool found = false;
 
     for (int i = 0; i < tokenVec.size(); i++){
         if (tokenVec.at(i).id == id){
             selToken = tokenVec.at(i);
+            found = true;
         }
+    }
+
+    if (!found){
+        return;
     }
 
 
@@ -1529,18 +1535,24 @@ void drawBlastTemplate(cv::Mat inMat, int type, int size, float alpha){
 
     } else if (type == CONE){
 
-       // size -= 5;
+
 
         if (selectedID == -1){
             return;
         }
 
         Token selToken;
+        bool found = false;
 
         for (int i = 0; i < tokenVec.size(); i++){
             if (tokenVec.at(i).id == selectedID){
                 selToken = tokenVec.at(i);
+                found = true;
             }
+        }
+
+        if (!found){
+            return;
         }
 
         if (selSquare.x == -1) {
@@ -2278,54 +2290,125 @@ void drawBlastTemplate(cv::Mat inMat, int type, int size, float alpha){
 
         addWeighted(inMat, alpha, hMat, 1.0 - alpha, 0.0, inMat);
 
+    } else if (type == LINE){
 
-    } else {
-        bool flag = false;
+
+        if (selectedID == -1){
+            return;
+        }
+
+        Token selToken;
         bool found = false;
 
-        for (int i = 0; i < hSize; i++){
-            for (int j = 0; j < vSize; j++){
-                if (grid[i][j].contains(touchPoint)){
-                    square.x = i;
-                    square.y = j;
-                    found = true;
-                    flag = true;
-                    break;
-                }
-            }
-            if (flag){
-                break;
+        for (int i = 0; i < tokenVec.size(); i++){
+            if (tokenVec.at(i).id == selectedID){
+                selToken = tokenVec.at(i);
+                found = true;
             }
         }
 
         if (!found){
-            touchPoint.x = -1;
-            touchPoint.y = -1;
-        } else {
-
-            cv::Mat hMat;
-            inMat.copyTo(hMat);
-
-            int j = 0, k = 0;
-            j = square.x;
-            k = square.y;
-
-            if (j >= 0 && j <= vSize){
-                if (k >= 0 && k <= hSize){
-                    grid[j][k].shadeSquare(inMat, cv::Scalar(255,140,0));
-                }
-            }
-
-            addWeighted( inMat, alpha, hMat, 1.0 - alpha, 0.0, inMat);
-
-
+            return;
         }
 
+        if (selSquare.x == -1) {
+            bool flag = false;
+
+            for (int i = 0; i < hSize; i++) {
+                for (int j = 0; j < vSize; j++) {
+                    if (grid[i][j].contains(touchPoint)) {
+
+                        selSquare.x = i;
+                        selSquare.y = j;
+
+                        flag = true;
+                        break;
+                    }
+                }
+                if (flag) {
+                    break;
+                }
+            }
+        }
+
+        double xDist = selSquare.x - selToken.location.x;
+        double yDist = selSquare.y - selToken.location.y;
+
+        double stepX;
+        if (yDist < -1e3){
+            stepX = 0.0;
+        } else {
+            stepX = xDist /(double) (100);
+        }
+        double stepY;
+        if (yDist < -1e3){
+            stepY = 0.0;
+        } else {
+            stepY = yDist /(double)  (100);
+        }
+
+        cv::Point2d pos = selToken.location;
+        cv::Point2d holder;
+        std::vector<cv::Point> positions;
+        int radius = size / 5;
+
+        while (fabs(distance(selToken.location, pos)) <= radius){
+            pos.x += stepX;
+            pos.y += stepY;
+            if (positions.size() > 0){
+                if (positions.at(positions.size() - 1).x != floor(pos.x) || positions.at(positions.size() - 1).y != floor(pos.y)){
+
+                    if (stepX < 0) {
+                        holder.x = ceil(pos.x);
+                    } else {
+                        holder.x = floor(pos.x);
+                    }
+
+                    if (stepY < 0) {
+                        holder.y = ceil(pos.y);
+                    } else {
+                        holder.y = floor(pos.y);
+                    }
+
+                    positions.push_back(cv::Point(holder.x, holder.y));
+                }
+            } else {
+                if (stepX < 0) {
+                    holder.x = ceil(pos.x);
+                } else {
+                    holder.x = floor(pos.x);
+                }
+
+                if (stepY < 0) {
+                    holder.y = ceil(pos.y);
+                } else {
+                    holder.y = floor(pos.y);
+                }
+
+                positions.push_back(cv::Point(holder.x, holder.y));
+            }
+        }
+
+        cv::Mat hMat;
+        inMat.copyTo(hMat);
+
+        for (int i = 0; i < positions.size(); i++) {
+            int j = 0, k = 0;
+            j = positions.at(i).x;
+            k = positions.at(i).y;
+
+            if (j >= 0 && j <= vSize) {
+                if (k >= 0 && k <= hSize) {
+                    grid[j][k].shadeSquare(inMat, cv::Scalar(255, 140, 0));
+                }
+            }
+        }
+
+        addWeighted(inMat, alpha, hMat, 1.0 - alpha, 0.0, inMat);
+
+
     }
-
-
-
-
+    
 }
 
 extern "C"
@@ -2390,7 +2473,7 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
 
     if (touchPoint.x != -1){
         cv::circle(finalMat, touchPoint, 5, cv::Scalar(255, 0, 0), -1);
-        int t = CONE;
+        int t = LINE;
 
         drawBlastTemplate(finalMat, t, 25, 0.5);
     }
