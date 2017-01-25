@@ -886,6 +886,9 @@ void findTokens(cv::Mat imageCopy, cv::Mat imageOut) {
             for (int k = 0; k < hSize; k++) {
                 //bool contains = grid[j][k].contains(cent);
 
+                gridSquare test = grid[j][k];
+
+
                 if (grid[j][k].contains(cent) == true) {
                     gridCount[j][k]++;
                 }
@@ -2444,14 +2447,21 @@ cv::Mat four_point_transform(cv::Mat image, std::vector<cv::Point2f> gridCorners
 
     cv::Mat M = cv::getPerspectiveTransform(rect, dst);
 
-    //cv::Mat dstM;
-    //cv::warpPerspective(image, dstM, M, cv::Size(maxW, maxH));
+    cv::Mat dstM;
+    cv::warpPerspective(image, dstM, M, cv::Size(maxW, maxH));
 
-    return M;
+    std::vector<cv::Point2f> nCorners;
+    nCorners.push_back(dst[0]);
+    nCorners.push_back(dst[1]);
+    nCorners.push_back(dst[2]);
+    nCorners.push_back(dst[3]);
+
+    computeGrid(dstM, nCorners, hSize, vSize );
+
+    return dstM;
 }
 
-
-std::vector<cv::Point2f> gridCornersC;
+cv::Mat M;
 extern "C"
 void
 Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobject instance, jlong image_final, jlong image_editable) {
@@ -2483,27 +2493,180 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
         start = true;
     }
 
+    if (ids.size() == 0){
+        start = false;
+    }
+
+
+
     if (start == true){
         // if at least one marker detected
         if (ids.size() > 0) {
             gridCorners = findCorners(corners, ids);
         }
 
-        if (ids.size() > 3){
-            gridCornersC = gridCorners;
-        } else {
-            gridCorners = gridCornersC;
+        computeGrid(finalMat, gridCorners, hSize, vSize);
+
+        for (int j = 0; j < vSize; j++) {
+            for (int k = 0; k < hSize; k++) {
+                gridSquare test = grid[j][k];
+            }
         }
 
-        cv::Mat M = four_point_transform(finalMat, gridCorners);
-        M = M.inv();
+        std::vector<cv::Point2f> ngC;
+        ngC.push_back(grid[0][0].corner[2]);
+        ngC.push_back(grid[0][vSize - 1].corner[3]);
+        ngC.push_back(grid[hSize - 1][vSize - 1].corner[0]);
+        ngC.push_back(grid[hSize - 1][0].corner[1]);
+
+        cv::Mat dst = four_point_transform(finalMat, ngC);
+
+        for (int j = 0; j < vSize; j++) {
+            for (int k = 0; k < hSize; k++) {
+                gridSquare test = grid[j][k];
+            }
+        }
+
+        std::vector<cv::Point2f> sgC;
+
+        sgC.push_back(grid[0][0].corner[2]);
+        sgC.push_back(grid[0][vSize - 1].corner[3]);
+        sgC.push_back(grid[hSize - 1][vSize - 1].corner[0]);
+        sgC.push_back(grid[hSize - 1][0].corner[1]);
+
+/*
+        sgC.push_back(cv::Point(0.0,0.0));
+        sgC.push_back(cv::Point(720.0,0.0));
+        sgC.push_back(cv::Point(720.0,480.0));
+        sgC.push_back(cv::Point(0.0,480.0));
+        */
+
+        //sgC.push_back(hLines[vSize][0]);
+
+
+
+        cv::Mat H = cv::findHomography(sgC, ngC);
+
+        cv::Mat warped;
+        cv::warpPerspective(dst,warped,H,finalMat.size());
+
+        std::vector<cv::Point2f> sX, rX;
+        for (int i = 0; i <= hSize; i++){
+            sX.push_back(hLines[i][0]);
+            sX.push_back(hLines[i][1]);
+        }
+
+        cv::perspectiveTransform(sX, rX, H);
+
+        int j = 0;
+        for (int i = 0; i <= hSize; i++){
+            hLines[i][0] = rX.at(j);
+            j++;
+            hLines[i][1] = rX.at(j);
+            j++;
+        }
+
+
+        std::vector<cv::Point2f> sY, rY;
+        for (int i = 0; i <= vSize; i++){
+            sY.push_back(vLines[i][0]);
+            sY.push_back(vLines[i][1]);
+        }
+
+        cv::perspectiveTransform(sY, rY, H);
+
+        j = 0;
+        for (int i = 0; i <= vSize; i++){
+            vLines[i][0] = rY.at(j);
+            j++;
+            vLines[i][1] = rY.at(j);
+            j++;
+        }
 
 
         computeGrid(finalMat, gridCorners, hSize, vSize);
+
+
+        findTokens(partMat, finalMat);
+
+        if (gridType == MOVEMENT) {
+            if (selectedID != -1){
+                colourRange(selectedID, 0.5, finalMat);
+            }
+            drawTokens(finalMat); // No transparency for tokens. Doesn't work well, becomes muddied.
+        } else if (gridType == ATTACK) {
+            drawTokens(finalMat); // Draw overtop of tokens to show which ones are in range
+            if (selectedID != -1){
+                colourRange(selectedID, 0.5, finalMat);
+            }
+        };
+
+        if (touchPoint.x != -1){
+            cv::circle(finalMat, touchPoint, 5, cv::Scalar(255, 0, 0), -1);
+            int t = SPHERE;
+
+            drawBlastTemplate(finalMat, t, 25, 0.5);
+        }
+
         drawGrid(finalMat, hSize, vSize);
 
+       /* hLines[0][0] = test2.at(0);
+        hLines[0][1] = test2.at(1);
+        hLines[1][0] = test2.at(2);
+        hLines[1][1] = test2.at(3);
+        hLines[2][0] = test2.at(4);
+        hLines[2][1] = test2.at(5);
+        hLines[3][0] = test2.at(6);
+        hLines[3][1] = test2.at(7);
+        hLines[4][0] = test2.at(8);
+        hLines[4][1] = test2.at(9);
+        hLines[5][0] = test2.at(10);
+        hLines[5][1] = test2.at(11); */
+        //finalMat = finalMat + warped;
+
+        //if (gridCorners.size() > 3){
+            //M = four_point_transform(finalMat, ngC);
+            //M = M.inv();
+        //}
+
 /*
+        for (int i = 0; i < vSize + 1; i++){
+            for (int j = 0; j < 2; j++){
+                cv::Point p = hLines[i][j];
+                cv::Mat_<double> src(3,1);
+
+                src(0,0)=p.x;
+                src(1,0)=p.y;
+                src(2,0)=1.0;
+
+                cv::Mat_<double> dst = M*src; //USE MATRIX ALGEBRA
+                hLines[i][j] = cv::Point2f(dst(0,0),dst(1,0));
+            }
+        }
+
+
+        for (int i = 0; i < hSize + 1; i++){
+            for (int j = 0; j < 2; j++){
+                cv::Point p = vLines[i][j];
+                cv::Mat_<double> src(3rows,1 cols);
+
+                src(0,0)=p.x;
+                src(1,0)=p.y;
+                src(2,0)=1.0;
+
+                cv::Mat_<double> dst = M*src; //USE MATRIX ALGEBRA
+                vLines[i][j] = cv::Point2f(dst(0,0),dst(1,0));
+            }
+        }
+*/
+
+       // drawGrid(finalMat, hSize, vSize);
+
+        //computeGrid(finalMat, gridCorners, hSize, vSize);
+        //drawGrid(finalMat, hSize, vSize);
+
         // refine findTokens
+        /*
         findTokens(partMat, finalMat);
 
         if (gridType == MOVEMENT) {
@@ -2526,7 +2689,8 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
         }
 
         drawGrid(finalMat, hSize, vSize);
-*/
+         */
+
     }
 
     cv::resize(inMat, inMat, cv::Size(1280, 720), 0, 0, cv::INTER_CUBIC);
