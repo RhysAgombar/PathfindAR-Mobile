@@ -7,6 +7,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/features2d.hpp>
+#include <opencv2/calib3d.hpp>
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -470,9 +471,7 @@ cv::Point **vLines;
 arMarker arUco[4];
 bool start;
 
-
 cv::Point touchPoint = cv::Point(-1,-1);
-
 
 class Weapon {
 public:
@@ -1043,6 +1042,7 @@ void computeGrid(cv::Mat imageCopy, std::vector<cv::Point2f> gridCorners, int ho
     cv::Mat dirVec[4]; // top left -> top right, bottom left -> bottom right, top left -> bottom left, top right -> bottom right
     float hDist, vDist, dist;
 
+    std::vector<cv::Point2f> hCorners;
 
     if (gridCorners.size() >= 3) {
 
@@ -1053,7 +1053,12 @@ void computeGrid(cv::Mat imageCopy, std::vector<cv::Point2f> gridCorners, int ho
             distx = gridCorners.at(3).x - gridCorners.at(0).x;
             disty = gridCorners.at(3).y - gridCorners.at(0).y;
 
-            hLines[i][0] = cv::Point(gridCorners.at(0).x + (distx * (i / (float)vert)), gridCorners.at(0).y + (disty) * (float)(i / (float)vert));
+           /* float ratio = fabs((gridCorners.at(3).x - gridCorners.at(2).x) / (gridCorners.at(1).x - gridCorners.at(0).x));
+            float step = ((ratio - 1) / vert);
+            float adjust = ratio - 1; */
+
+
+            hLines[i][0] = cv::Point(gridCorners.at(0).x + (distx * (i / (float)vert)), gridCorners.at(0).y + (disty) * (float)(i / (float)vert)); // (adjust + step * i)
 
             distx = gridCorners.at(2).x - gridCorners.at(1).x;
             disty = gridCorners.at(2).y - gridCorners.at(1).y;
@@ -1076,14 +1081,6 @@ void computeGrid(cv::Mat imageCopy, std::vector<cv::Point2f> gridCorners, int ho
             vLines[i][1] = cv::Point(gridCorners.at(3).x + (distx * (i / (float)horiz)), gridCorners.at(3).y + (disty) * (float)(i / (float)horiz));
         }
 
-        /*for (int i = 0; i <= vert; i++) {
-            cv::line(imageCopy, hLines[i][0], hLines[i][1], cv::Scalar(255, 255, 255));
-        }
-
-        for (int i = 0; i <= horiz; i++) {
-            cv::line(imageCopy, vLines[i][0], vLines[i][1], cv::Scalar(255, 255, 255));
-        }*/
-
         for (int i = 0; i < vert; i++) {
             for (int j = 0; j < horiz; j++) {
                 grid[i][j].corner[0] = findIntersection(hLines[i][0], hLines[i][1], vLines[j][0], vLines[j][1]);
@@ -1092,6 +1089,11 @@ void computeGrid(cv::Mat imageCopy, std::vector<cv::Point2f> gridCorners, int ho
                 grid[i][j].corner[3] = findIntersection(hLines[i + 1][0], hLines[i + 1][1], vLines[j][0], vLines[j][1]);
             }
         }
+
+
+
+
+
 
     }
 }
@@ -2370,7 +2372,9 @@ void drawBlastTemplate(cv::Mat inMat, int type, int size, float alpha){
                         holder.y = floor(pos.y);
                     }
 
-                    positions.push_back(cv::Point(holder.x, holder.y));
+                    if (holder.x != selToken.location.x || holder.y != selToken.location.y){
+                        positions.push_back(cv::Point(holder.x, holder.y));
+                    }
                 }
             } else {
                 if (stepX < 0) {
@@ -2385,7 +2389,9 @@ void drawBlastTemplate(cv::Mat inMat, int type, int size, float alpha){
                     holder.y = floor(pos.y);
                 }
 
-                positions.push_back(cv::Point(holder.x, holder.y));
+                if (holder.x != selToken.location.x || holder.y != selToken.location.y){
+                    positions.push_back(cv::Point(holder.x, holder.y));
+                }
             }
         }
 
@@ -2408,9 +2414,44 @@ void drawBlastTemplate(cv::Mat inMat, int type, int size, float alpha){
 
 
     }
-    
+
 }
 
+cv::Mat four_point_transform(cv::Mat image, std::vector<cv::Point2f> gridCorners){
+    float widthA = sqrt(pow((gridCorners.at(2).x - gridCorners.at(3).x), 2) + pow((gridCorners.at(2).y - gridCorners.at(3).y), 2));
+    float widthB = sqrt(pow((gridCorners.at(1).x - gridCorners.at(0).x), 2) + pow((gridCorners.at(1).y - gridCorners.at(0).y), 2));
+    float maxW = 0.0;
+
+    if (widthA > widthB){
+        maxW = widthA;
+    } else {
+        maxW = widthB;
+    }
+
+    float heightA = sqrt(pow((gridCorners.at(1).x - gridCorners.at(2).x), 2) + pow((gridCorners.at(1).y - gridCorners.at(2).y), 2));
+    float heightB = sqrt(pow((gridCorners.at(0).x - gridCorners.at(3).x), 2) + pow((gridCorners.at(0).y - gridCorners.at(3).y), 2));
+    float maxH = 0.0;
+
+    if (heightA > heightB){
+        maxH = heightA;
+    } else {
+        maxH = heightB;
+    }
+
+
+    cv::Point2f rect[4] = {gridCorners.at(0), gridCorners.at(1), gridCorners.at(2), gridCorners.at(3)};
+    cv::Point2f dst[4] = {cv::Point2f(0,0), cv::Point2f(maxW - 1,0), cv::Point2f(maxW - 1, maxH - 1), cv::Point2f(0,maxH - 1)};
+
+    cv::Mat M = cv::getPerspectiveTransform(rect, dst);
+
+    //cv::Mat dstM;
+    //cv::warpPerspective(image, dstM, M, cv::Size(maxW, maxH));
+
+    return M;
+}
+
+
+std::vector<cv::Point2f> gridCornersC;
 extern "C"
 void
 Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobject instance, jlong image_final, jlong image_editable) {
@@ -2448,11 +2489,22 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
             gridCorners = findCorners(corners, ids);
         }
 
-        computeGrid(finalMat, gridCorners, hSize, vSize);
+        if (ids.size() > 3){
+            gridCornersC = gridCorners;
+        } else {
+            gridCorners = gridCornersC;
+        }
 
+        cv::Mat M = four_point_transform(finalMat, gridCorners);
+        M = M.inv();
+
+
+        computeGrid(finalMat, gridCorners, hSize, vSize);
+        drawGrid(finalMat, hSize, vSize);
+
+/*
         // refine findTokens
         findTokens(partMat, finalMat);
-
 
         if (gridType == MOVEMENT) {
             if (selectedID != -1){
@@ -2466,19 +2518,16 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
             }
         };
 
+        if (touchPoint.x != -1){
+            cv::circle(finalMat, touchPoint, 5, cv::Scalar(255, 0, 0), -1);
+            int t = LINE;
+
+            drawBlastTemplate(finalMat, t, 25, 0.5);
+        }
 
         drawGrid(finalMat, hSize, vSize);
-
+*/
     }
-
-    if (touchPoint.x != -1){
-        cv::circle(finalMat, touchPoint, 5, cv::Scalar(255, 0, 0), -1);
-        int t = LINE;
-
-        drawBlastTemplate(finalMat, t, 25, 0.5);
-    }
-
-
 
     cv::resize(inMat, inMat, cv::Size(1280, 720), 0, 0, cv::INTER_CUBIC);
     cv::resize(finalMat, finalMat, cv::Size(1280, 720), 0, 0, cv::INTER_CUBIC);
