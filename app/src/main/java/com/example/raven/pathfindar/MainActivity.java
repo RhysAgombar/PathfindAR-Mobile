@@ -55,18 +55,20 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     private int selToken = -1;
 
     private boolean tracking = false;
-    private boolean blast = false;
 
     public static final int LINE = 0;
     public static final int CONE = 1;
     public static final int SPHERE = 2;
-    public static final int CUBE = 3;
+
 
     private boolean paused = false;
     public static final int PAUSE_TIME = 100;
     private int pauseTimer = PAUSE_TIME;
 
     private int x = 10, y = 10;
+    private int blastRad = 0;
+    private int blastType = -1;
+
     int screenWidth;
     int screenHeight;
 
@@ -208,12 +210,6 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
             List<Mat> corners = new ArrayList<>();
 
-            // Crashes here
-            //Dictionary dict = Aruco.getPredefinedDictionary(Aruco.DICT_6X6_250);
-
-            //Size szSource = new Size(640,480);
-            //Size szFin = new Size(720,1280);
-
             long addr1 = col.getNativeObjAddr(), addr2 = secondary.getNativeObjAddr();
 
             detectMarkers(addr1, addr2);
@@ -250,35 +246,37 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             Button toggleButton = (Button)findViewById(R.id.bt_swapGridType);
             toggleButton.setText("Attack");
 
-            Button w1 = (Button)findViewById(R.id.bt_selWeapon1);
-            Button w2 = (Button)findViewById(R.id.bt_selWeapon2);
-            Button w3 = (Button)findViewById(R.id.bt_selWeapon3);
-            Button w4 = (Button)findViewById(R.id.bt_selWeapon4);
+            if (selToken >= 0){
+                Button w1 = (Button)findViewById(R.id.bt_selWeapon1);
+                Button w2 = (Button)findViewById(R.id.bt_selWeapon2);
+                Button w3 = (Button)findViewById(R.id.bt_selWeapon3);
+                Button w4 = (Button)findViewById(R.id.bt_selWeapon4);
 
-            Token selectedToken = tokenList.get(selToken);
+                Token selectedToken = tokenList.get(selToken);
 
-            if (!selectedToken.w1.name.equals("")) {
-                w1.setVisibility(View.VISIBLE);
-            } else {
-                w1.setVisibility(View.INVISIBLE);
-            }
+                if (!selectedToken.w1.name.equals("")) {
+                    w1.setVisibility(View.VISIBLE);
+                } else {
+                    w1.setVisibility(View.INVISIBLE);
+                }
 
-            if (!selectedToken.w2.name.equals("")) {
-                w2.setVisibility(View.VISIBLE);
-            } else {
-                w2.setVisibility(View.INVISIBLE);
-            }
+                if (!selectedToken.w2.name.equals("")) {
+                    w2.setVisibility(View.VISIBLE);
+                } else {
+                    w2.setVisibility(View.INVISIBLE);
+                }
 
-            if (!selectedToken.w3.name.equals("")) {
-                w3.setVisibility(View.VISIBLE);
-            } else {
-                w3.setVisibility(View.INVISIBLE);
-            }
+                if (!selectedToken.w3.name.equals("")) {
+                    w3.setVisibility(View.VISIBLE);
+                } else {
+                    w3.setVisibility(View.INVISIBLE);
+                }
 
-            if (!selectedToken.w4.name.equals("")) {
-                w4.setVisibility(View.VISIBLE);
-            } else {
-                w4.setVisibility(View.INVISIBLE);
+                if (!selectedToken.w4.name.equals("")) {
+                    w4.setVisibility(View.VISIBLE);
+                } else {
+                    w4.setVisibility(View.INVISIBLE);
+                }
             }
 
         } else {
@@ -304,14 +302,83 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     }
 
     public void toggleBlastTemplate(View view) {
-        if (blast){
-            blast = false;
-        } else {
-            blast = true;
+
+        Button blastButton = (Button)findViewById(R.id.bt_blastTemplate);
+
+        if (blastType == -1){
+            TextView blastRadL = (TextView)findViewById(R.id.tv_blastRad);
+            Button plus = (Button)findViewById(R.id.bt_plusBlast);
+            Button minus = (Button)findViewById(R.id.bt_minusBlast);
+
+            blastRadL.setVisibility(View.VISIBLE);
+            plus.setVisibility(View.VISIBLE);
+            minus.setVisibility(View.VISIBLE);
+
+            blastType = LINE;
+            blastButton.setText("Line");
+        } else if (blastType == LINE){
+            TextView blastRadL = (TextView)findViewById(R.id.tv_blastRad);
+            Button plus = (Button)findViewById(R.id.bt_plusBlast);
+            Button minus = (Button)findViewById(R.id.bt_minusBlast);
+
+            blastRadL.setVisibility(View.VISIBLE);
+            plus.setVisibility(View.VISIBLE);
+            minus.setVisibility(View.VISIBLE);
+
+            blastType = CONE;
+            blastButton.setText("Cone");
+        } else if (blastType == CONE){
+            TextView blastRadL = (TextView)findViewById(R.id.tv_blastRad);
+            Button plus = (Button)findViewById(R.id.bt_plusBlast);
+            Button minus = (Button)findViewById(R.id.bt_minusBlast);
+
+            blastRadL.setVisibility(View.VISIBLE);
+            plus.setVisibility(View.VISIBLE);
+            minus.setVisibility(View.VISIBLE);
+
+            blastType = SPHERE;
+            blastButton.setText("Sphere");
+        } else if (blastType == SPHERE){
+            blastType = -1;
+            blastButton.setText("Blast");
+
+            TextView blastRadL = (TextView)findViewById(R.id.tv_blastRad);
+            Button plus = (Button)findViewById(R.id.bt_plusBlast);
+            Button minus = (Button)findViewById(R.id.bt_minusBlast);
+
+            blastRadL.setVisibility(View.INVISIBLE);
+            plus.setVisibility(View.INVISIBLE);
+            minus.setVisibility(View.INVISIBLE);
         }
 
+        TextView blastRadL = (TextView)findViewById(R.id.tv_blastRad);
 
+        String blastText = blastRadL.getText().toString();
 
+        blastRad = Integer.parseInt(blastText);
+
+        setBlastTemplate(blastType, blastRad);
+
+    }
+
+    public void incrementBlast(View view) {
+        TextView blastRadL = (TextView)findViewById(R.id.tv_blastRad);
+
+        blastRad += 5;
+
+        blastRadL.setText(Integer.toString(blastRad));
+        setBlastTemplate(blastType, blastRad);
+    }
+
+    public void decrementBlast(View view) {
+        TextView blastRadL = (TextView)findViewById(R.id.tv_blastRad);
+
+        if (blastRad > 5){
+            blastRad -= 5;
+        }
+
+        blastRadL.setText(Integer.toString(blastRad));
+        setBlastTemplate(blastType, blastRad);
     }
 
     public void openGridMenu(View view) {
@@ -519,35 +586,37 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             Button toggleButton = (Button)findViewById(R.id.bt_swapGridType);
             toggleButton.setText("Attack");
 
-            Button w1 = (Button)findViewById(R.id.bt_selWeapon1);
-            Button w2 = (Button)findViewById(R.id.bt_selWeapon2);
-            Button w3 = (Button)findViewById(R.id.bt_selWeapon3);
-            Button w4 = (Button)findViewById(R.id.bt_selWeapon4);
+            if (selToken >= 0) {
+                Button w1 = (Button) findViewById(R.id.bt_selWeapon1);
+                Button w2 = (Button) findViewById(R.id.bt_selWeapon2);
+                Button w3 = (Button) findViewById(R.id.bt_selWeapon3);
+                Button w4 = (Button) findViewById(R.id.bt_selWeapon4);
 
-            Token selectedToken = tokenList.get(selToken);
+                Token selectedToken = tokenList.get(selToken);
 
-            if (!selectedToken.w1.name.equals("")) {
-                w1.setVisibility(View.VISIBLE);
-            } else {
-                w1.setVisibility(View.INVISIBLE);
-            }
+                if (!selectedToken.w1.name.equals("")) {
+                    w1.setVisibility(View.VISIBLE);
+                } else {
+                    w1.setVisibility(View.INVISIBLE);
+                }
 
-            if (!selectedToken.w2.name.equals("")) {
-                w2.setVisibility(View.VISIBLE);
-            } else {
-                w2.setVisibility(View.INVISIBLE);
-            }
+                if (!selectedToken.w2.name.equals("")) {
+                    w2.setVisibility(View.VISIBLE);
+                } else {
+                    w2.setVisibility(View.INVISIBLE);
+                }
 
-            if (!selectedToken.w3.name.equals("")) {
-                w3.setVisibility(View.VISIBLE);
-            } else {
-                w3.setVisibility(View.INVISIBLE);
-            }
+                if (!selectedToken.w3.name.equals("")) {
+                    w3.setVisibility(View.VISIBLE);
+                } else {
+                    w3.setVisibility(View.INVISIBLE);
+                }
 
-            if (!selectedToken.w4.name.equals("")) {
-                w4.setVisibility(View.VISIBLE);
-            } else {
-                w4.setVisibility(View.INVISIBLE);
+                if (!selectedToken.w4.name.equals("")) {
+                    w4.setVisibility(View.VISIBLE);
+                } else {
+                    w4.setVisibility(View.INVISIBLE);
+                }
             }
 
         } else {
@@ -573,7 +642,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
-        if (!blast){
+        if (blastType == -1){
             return false;
         }
 
@@ -600,7 +669,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     public native void setDisplayType(int type);
     public native void setSelectedToken(int selectedTokenID);
     public native void setSelectedWeapon(int selectedWeapon);
+    public native void setBlastTemplate(int blastID, int radius);
     public native void setTouchPos(int x, int y);
     public native void init();
-
 }

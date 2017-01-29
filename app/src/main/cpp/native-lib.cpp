@@ -38,7 +38,10 @@ static const int ATTACK = 1;
 static const int LINE = 0;
 static const int CONE = 1;
 static const int SPHERE = 2;
-static const int CUBE = 3;
+
+int selectedBlast = -1;
+int blastRadius = 0;
+
 
 class gridSquare {
 public:
@@ -925,7 +928,7 @@ void findTokens(cv::Mat imageCopy, cv::Mat imageOut) {
                     const cv::Point* ppt[1] = { polyPoints[0] };
                     int npt[] = { 4 };
 
-                    cv::fillPoly(imageOut, ppt, npt, 1, cv::Scalar(255, 255, 255));
+                    //cv::fillPoly(imageOut, ppt, npt, 1, cv::Scalar(255, 255, 255));
 
                     gridCount[j][k] = 0;
 
@@ -2507,13 +2510,7 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
 
         computeGrid(finalMat, gridCorners, hSize, vSize);
 
-        for (int j = 0; j < vSize; j++) {
-            for (int k = 0; k < hSize; k++) {
-                gridSquare test = grid[j][k];
-            }
-        }
-
-        std::vector<cv::Point2f> ngC;
+        std::vector<cv::Point2f> ngC; // New Grid Corners (from markers on ground)
         ngC.push_back(grid[0][0].corner[2]);
         ngC.push_back(grid[0][vSize - 1].corner[3]);
         ngC.push_back(grid[hSize - 1][vSize - 1].corner[0]);
@@ -2521,45 +2518,30 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
 
         cv::Mat dst = four_point_transform(finalMat, ngC);
 
-        for (int j = 0; j < vSize; j++) {
-            for (int k = 0; k < hSize; k++) {
-                gridSquare test = grid[j][k];
-            }
-        }
-
-        std::vector<cv::Point2f> sgC;
+        std::vector<cv::Point2f> sgC; // Straight Grid Corners (perfectly straight grid)
 
         sgC.push_back(grid[0][0].corner[2]);
         sgC.push_back(grid[0][vSize - 1].corner[3]);
         sgC.push_back(grid[hSize - 1][vSize - 1].corner[0]);
         sgC.push_back(grid[hSize - 1][0].corner[1]);
 
-/*
-        sgC.push_back(cv::Point(0.0,0.0));
-        sgC.push_back(cv::Point(720.0,0.0));
-        sgC.push_back(cv::Point(720.0,480.0));
-        sgC.push_back(cv::Point(0.0,480.0));
-        */
-
-        //sgC.push_back(hLines[vSize][0]);
-
-
-
         cv::Mat H = cv::findHomography(sgC, ngC);
 
         cv::Mat warped;
         cv::warpPerspective(dst,warped,H,finalMat.size());
 
-        std::vector<cv::Point2f> sX, rX;
-        for (int i = 0; i <= hSize; i++){
+        // Project the points properly now
+        std::vector<cv::Point2f> sX, rX; // start x, result x
+        for (int i = 0; i <= hSize; i++){ // queue each point from the horizontal lines
             sX.push_back(hLines[i][0]);
             sX.push_back(hLines[i][1]);
         }
 
+        // Transform them with the H matrix
         cv::perspectiveTransform(sX, rX, H);
 
         int j = 0;
-        for (int i = 0; i <= hSize; i++){
+        for (int i = 0; i <= hSize; i++){ // reset them
             hLines[i][0] = rX.at(j);
             j++;
             hLines[i][1] = rX.at(j);
@@ -2567,7 +2549,7 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
         }
 
 
-        std::vector<cv::Point2f> sY, rY;
+        std::vector<cv::Point2f> sY, rY; // Start y, result y
         for (int i = 0; i <= vSize; i++){
             sY.push_back(vLines[i][0]);
             sY.push_back(vLines[i][1]);
@@ -2583,9 +2565,7 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
             j++;
         }
 
-
         computeGrid(finalMat, gridCorners, hSize, vSize);
-
 
         findTokens(partMat, finalMat);
 
@@ -2601,11 +2581,9 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
             }
         };
 
-        if (touchPoint.x != -1){
+        if (touchPoint.x != -1 && selectedBlast != -1){
             cv::circle(finalMat, touchPoint, 5, cv::Scalar(255, 0, 0), -1);
-            int t = SPHERE;
-
-            drawBlastTemplate(finalMat, t, 25, 0.5);
+            drawBlastTemplate(finalMat, selectedBlast, blastRadius, 0.5);
         }
 
         drawGrid(finalMat, hSize, vSize);
@@ -2729,6 +2707,15 @@ extern "C"
 void
 Java_com_example_raven_pathfindar_MainActivity_setSelectedWeapon(JNIEnv *env, jobject instance, jint weaponID) {
     selectedWeapon = weaponID;
+}
+
+extern "C"
+void
+Java_com_example_raven_pathfindar_MainActivity_setBlastTemplate(JNIEnv *env, jobject instance, jint blastID, jint radius) {
+
+    selectedBlast = blastID;
+    blastRadius = radius;
+
 }
 
 extern "C"

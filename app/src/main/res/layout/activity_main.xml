@@ -51,6 +51,39 @@
             android:text="Move"
             android:onClick="toggleGridType"/>
 
+        <Button
+            android:id="@+id/bt_minusBlast"
+            android:layout_height="wrap_content"
+            android:layout_width="30dp"
+            android:visibility="invisible"
+            android:layout_toRightOf="@id/bt_blastTemplate"
+            android:text="@string/minus"
+            android:onClick="decrementBlast"/>
+
+        <TextView
+            android:id="@+id/tv_blastRad"
+            android:layout_height="wrap_content"
+            android:layout_width="36dp"
+            android:visibility="invisible"
+            android:layout_alignBaseline="@+id/bt_minusBlast"
+            android:layout_alignBottom="@+id/bt_minusBlast"
+            android:layout_toEndOf="@+id/bt_minusBlast"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:background="@android:color/white"
+            android:text="@string/_15"/>
+
+        <Button
+            android:id="@+id/bt_plusBlast"
+            android:layout_height="wrap_content"
+            android:layout_width="30dp"
+            android:visibility="invisible"
+            android:layout_alignTop="@id/bt_minusBlast"
+            android:layout_alignBottom="@+id/bt_minusBlast"
+            android:layout_toEndOf="@+id/tv_blastRad"
+            android:text="@string/plus"
+            android:onClick="incrementBlast"/>
+
 
     </RelativeLayout>
 
@@ -78,43 +111,45 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal">
 
-        <Button
-            android:id="@+id/bt_selWeapon1"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_alignParentStart="true"
-            android:text="1"
-            android:onClick="selWeapon1"/>
+    <Button
+        android:id="@+id/bt_selWeapon1"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:visibility="invisible"
+        android:text="1"
+        android:onClick="selWeapon1"/>
 
-        <Button
-            android:id="@+id/bt_selWeapon2"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_toRightOf="@id/bt_selWeapon1"
-            android:text="2"
-            android:onClick="selWeapon2"/>
+    <Button
+        android:id="@+id/bt_selWeapon2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_toRightOf="@id/bt_selWeapon1"
+        android:visibility="invisible"
+        android:text="2"
+        android:onClick="selWeapon2"/>
 
-        <Button
-            android:id="@+id/bt_selWeapon3"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_toRightOf="@id/bt_selWeapon2"
-            android:text="3"
-            android:onClick="selWeapon3"/>
+    <Button
+        android:id="@+id/bt_selWeapon3"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_toRightOf="@id/bt_selWeapon2"
+        android:visibility="invisible"
+        android:text="3"
+        android:onClick="selWeapon3"/>
 
-        <Button
-            android:id="@+id/bt_selWeapon4"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_toRightOf="@id/bt_selWeapon3"
-            android:text="4"
-            android:onClick="selWeapon4"/>
-
-
+    <Button
+        android:id="@+id/bt_selWeapon4"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_toRightOf="@id/bt_selWeapon3"
+        android:visibility="invisible"
+        android:text="4"
+        android:onClick="selWeapon4"/>
     </RelativeLayout>
 
 </FrameLayout>
