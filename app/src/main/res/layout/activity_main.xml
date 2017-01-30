@@ -70,6 +70,7 @@
             android:layout_toEndOf="@+id/bt_minusBlast"
             android:paddingRight="10dp"
             android:paddingLeft="10dp"
+            android:textStyle="bold"
             android:background="@android:color/white"
             android:text="@string/_15"/>
 
@@ -156,13 +157,14 @@
         android:id="@+id/layt_dPad"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|right">
+        android:layout_gravity="center_vertical|right"
+        android:background="@android:color/white">
 
         <Button
             android:id="@+id/bt_MoveUpLeft"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:text="<^"
+            android:text=""
             android:onClick="adjustPathUpLeft"/>
 
         <Button
@@ -170,7 +172,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_below="@id/bt_MoveUpLeft"
-            android:text="<"
+            android:text=""
             android:onClick="adjustPathLeft"/>
 
         <Button
@@ -178,7 +180,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_below="@id/bt_MoveLeft"
-            android:text="<v"
+            android:text=""
             android:onClick="adjustPathDownLeft"/>
 
         <Button
@@ -187,7 +189,7 @@
             android:layout_height="40dp"
             android:layout_toRightOf="@id/bt_MoveDownLeft"
             android:layout_below="@id/bt_MoveLeft"
-            android:text="v"
+            android:text=""
             android:onClick="adjustPathDown"/>
 
         <Button
@@ -196,7 +198,7 @@
             android:layout_height="40dp"
             android:layout_toRightOf="@id/bt_MoveDown"
             android:layout_below="@id/bt_MoveLeft"
-            android:text="v-"
+            android:text=""
             android:onClick="adjustPathDownRight"/>
 
         <Button
@@ -205,7 +207,7 @@
             android:layout_height="40dp"
             android:layout_toRightOf="@id/bt_MoveDown"
             android:layout_below="@id/bt_MoveUpLeft"
-            android:text=">"
+            android:text=""
             android:onClick="adjustPathRight"/>
 
         <Button
@@ -213,7 +215,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_toRightOf="@id/bt_MoveDown"
-            android:text="^>"
+            android:text=""
             android:onClick="adjustPathUpRight"/>
 
         <Button
@@ -221,8 +223,17 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_toRightOf="@id/bt_MoveUpLeft"
-            android:text="^"
+            android:text=""
             android:onClick="adjustPathUp"/>
+
+        <TextView
+            android:id="@+id/tv_mRemain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textStyle="bold"
+            android:text="10"
+            android:onClick="resetPath"/>
 
 
     </RelativeLayout>

@@ -41,6 +41,9 @@ static const int SPHERE = 2;
 
 int selectedBlast = -1;
 int blastRadius = 0;
+int mRemain = 0;
+
+std::vector<std::string> movementPieces;
 
 
 class gridSquare {
@@ -491,7 +494,7 @@ public:
     std::string name = "";
     cv::Point location = cv::Point(0.0,0.0);
     int mRange = 30;
-    //int mRemain;
+    //int mRemain = 30;
     int lifespan = 0;
     bool found = false;
     cv::Scalar colour = cv::Scalar(0,0,0);
@@ -2777,6 +2780,26 @@ JNIEXPORT jstring JNICALL Java_com_example_raven_pathfindar_MainActivity_getToke
     puts(out.c_str());
     result = (*env).NewStringUTF(out.c_str());
     return result;
+}
+
+
+extern "C"
+void
+Java_com_example_raven_pathfindar_MainActivity_setPlottingPath(JNIEnv *env, jobject instance, jstring inString) {
+
+    const jsize len = env->GetStringUTFLength(inString);
+    const char* strChars = env->GetStringUTFChars(inString, (jboolean *)0);
+
+    std::string procString(strChars, len);
+
+    split(procString, '-', movementPieces);
+
+}
+
+
+extern "C"
+JNIEXPORT jint JNICALL Java_com_example_raven_pathfindar_MainActivity_getMovementRemain(JNIEnv *env, jobject obj) {
+    return mRemain;
 }
 
 extern "C"

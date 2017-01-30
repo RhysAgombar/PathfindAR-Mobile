@@ -49,10 +49,14 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
     public static final int MOVEMENT = 0;
     public static final int ATTACK = 1;
+    public static final int PLOTTING = 2;
 
     private int gridToggle = 0;
     private int selWeapon = -1;
     private int selToken = -1;
+
+    private String plotPath = "";
+    private int mRemaining = 30;
 
     private boolean tracking = false;
 
@@ -242,15 +246,19 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     public void toggleGridType(View view) {
 
         if (gridToggle == MOVEMENT) {
+            gridToggle = PLOTTING;
+
+        } else if (gridToggle == PLOTTING){
             gridToggle = ATTACK;
-            Button toggleButton = (Button)findViewById(R.id.bt_swapGridType);
+
+            Button toggleButton = (Button) findViewById(R.id.bt_swapGridType);
             toggleButton.setText("Attack");
 
-            if (selToken >= 0){
-                Button w1 = (Button)findViewById(R.id.bt_selWeapon1);
-                Button w2 = (Button)findViewById(R.id.bt_selWeapon2);
-                Button w3 = (Button)findViewById(R.id.bt_selWeapon3);
-                Button w4 = (Button)findViewById(R.id.bt_selWeapon4);
+            if (selToken >= 0) {
+                Button w1 = (Button) findViewById(R.id.bt_selWeapon1);
+                Button w2 = (Button) findViewById(R.id.bt_selWeapon2);
+                Button w3 = (Button) findViewById(R.id.bt_selWeapon3);
+                Button w4 = (Button) findViewById(R.id.bt_selWeapon4);
 
                 Token selectedToken = tokenList.get(selToken);
 
@@ -662,6 +670,43 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     }
 
 
+    public void adjustPathUpLeft(View view) {
+        plotPath = plotPath.concat("UL-");
+        setPlottingPath(plotPath);
+        mRemaining = getMovementRemain();
+
+
+
+    }
+
+    public void adjustPathLeft(View view) {
+        plotPath = plotPath.concat("L-");
+    }
+
+    public void adjustPathDownLeft(View view) {
+        plotPath = plotPath.concat("DL-");
+    }
+
+    public void adjustPathDown(View view) {
+        plotPath = plotPath.concat("D-");
+    }
+
+    public void adjustPathDownRight(View view) {
+        plotPath = plotPath.concat("DR-");
+    }
+
+    public void adjustPathRight(View view) {
+        plotPath = plotPath.concat("R-");
+    }
+
+    public void adjustPathUpRight(View view) {
+        plotPath = plotPath.concat("UR-");
+    }
+
+    public void adjustPathUp(View view) {
+        plotPath = plotPath.concat("U-");
+    }
+
     public native void detectMarkers(long image_final,long image_editable);
     public native void adjustGridDimensions(int x,int y);
     public native String getTokenList();
@@ -670,30 +715,8 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     public native void setSelectedToken(int selectedTokenID);
     public native void setSelectedWeapon(int selectedWeapon);
     public native void setBlastTemplate(int blastID, int radius);
+    public native int getMovementRemain();
+    public native void setPlottingPath(String path);
     public native void setTouchPos(int x, int y);
     public native void init();
-
-    public void adjustPathUpLeft(View view) {
-    }
-
-    public void adjustPathLeft(View view) {
-    }
-
-    public void adjustPathDownLeft(View view) {
-    }
-
-    public void adjustPathDown(View view) {
-    }
-
-    public void adjustPathDownRight(View view) {
-    }
-
-    public void adjustPathRight(View view) {
-    }
-
-    public void adjustPathUpRight(View view) {
-    }
-
-    public void adjustPathUp(View view) {
-    }
 }
