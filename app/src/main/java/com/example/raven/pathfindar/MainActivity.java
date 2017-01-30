@@ -672,4 +672,28 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     public native void setBlastTemplate(int blastID, int radius);
     public native void setTouchPos(int x, int y);
     public native void init();
+
+    public void adjustPathUpLeft(View view) {
+    }
+
+    public void adjustPathLeft(View view) {
+    }
+
+    public void adjustPathDownLeft(View view) {
+    }
+
+    public void adjustPathDown(View view) {
+    }
+
+    public void adjustPathDownRight(View view) {
+    }
+
+    public void adjustPathRight(View view) {
+    }
+
+    public void adjustPathUpRight(View view) {
+    }
+
+    public void adjustPathUp(View view) {
+    }
 }

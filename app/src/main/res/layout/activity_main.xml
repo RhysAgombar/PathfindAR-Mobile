@@ -152,4 +152,80 @@
         android:onClick="selWeapon4"/>
     </RelativeLayout>
 
+    <RelativeLayout
+        android:id="@+id/layt_dPad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|right">
+
+        <Button
+            android:id="@+id/bt_MoveUpLeft"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="<^"
+            android:onClick="adjustPathUpLeft"/>
+
+        <Button
+            android:id="@+id/bt_MoveLeft"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/bt_MoveUpLeft"
+            android:text="<"
+            android:onClick="adjustPathLeft"/>
+
+        <Button
+            android:id="@+id/bt_MoveDownLeft"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/bt_MoveLeft"
+            android:text="<v"
+            android:onClick="adjustPathDownLeft"/>
+
+        <Button
+            android:id="@+id/bt_MoveDown"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_toRightOf="@id/bt_MoveDownLeft"
+            android:layout_below="@id/bt_MoveLeft"
+            android:text="v"
+            android:onClick="adjustPathDown"/>
+
+        <Button
+            android:id="@+id/bt_MoveDownRight"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_toRightOf="@id/bt_MoveDown"
+            android:layout_below="@id/bt_MoveLeft"
+            android:text="v-"
+            android:onClick="adjustPathDownRight"/>
+
+        <Button
+            android:id="@+id/bt_MoveRight"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_toRightOf="@id/bt_MoveDown"
+            android:layout_below="@id/bt_MoveUpLeft"
+            android:text=">"
+            android:onClick="adjustPathRight"/>
+
+        <Button
+            android:id="@+id/bt_MoveUpRight"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_toRightOf="@id/bt_MoveDown"
+            android:text="^>"
+            android:onClick="adjustPathUpRight"/>
+
+        <Button
+            android:id="@+id/bt_moveUp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_toRightOf="@id/bt_MoveUpLeft"
+            android:text="^"
+            android:onClick="adjustPathUp"/>
+
+
+    </RelativeLayout>
+
+
 </FrameLayout>
