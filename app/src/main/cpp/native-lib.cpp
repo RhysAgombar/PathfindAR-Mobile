@@ -34,6 +34,7 @@ int selectedWeapon = -1;
 int gridType = 0;
 static const int MOVEMENT = 0;
 static const int ATTACK = 1;
+static const int PLOTTING = 2;
 
 static const int LINE = 0;
 static const int CONE = 1;
@@ -1180,7 +1181,7 @@ void colourRange(int id, double alpha, cv::Mat finalMat){
     cv::Scalar colour[6];
     colour[0] = cv::Scalar(15, 169, 15);
     colour[1] = cv::Scalar(255, 0, 0);  // Tried with a gradiant before. The transparency made it difficult to distinguish colours without having them be vastly different. Having them vastly different looked terrible, so I chose to use a light and a much darker shade of red, alternating.
-    colour[2] = cv::Scalar(150, 0, 0);
+    colour[2] = cv::Scalar(150, 0, 0);  // Keeping it like this for the time being, in case I find a colour scheme that works
     colour[3] = cv::Scalar(255, 0, 0);
     colour[4] = cv::Scalar(150, 0, 0);
     colour[5] = cv::Scalar(255, 0, 0);
@@ -1190,8 +1191,6 @@ void colourRange(int id, double alpha, cv::Mat finalMat){
 
     Weapon selWeapon;
     bool noWeapon = true;
-
-    int test = selectedWeapon;
 
     if (selectedWeapon == 1) {
         noWeapon = false;
@@ -1222,6 +1221,7 @@ void colourRange(int id, double alpha, cv::Mat finalMat){
             }
 
             for (int l = itterations; l >= 0; l--){ // This needs to be optimized... baddly.
+
                 if (l == 0) {
                     squaresToColour = colourRadiusFromSquare(np,selWeapon.range, exclusion);
                 } else {
@@ -1270,6 +1270,75 @@ void colourRange(int id, double alpha, cv::Mat finalMat){
 
         addWeighted( finalMat, alpha, hMat, 1.0 - alpha, 0.0, finalMat);
     }
+
+}
+
+void colourPlot(int id, double alpha, cv::Mat finalMat){
+
+    Token selToken;
+    bool found = false;
+
+    for (int i = 0; i < tokenVec.size(); i++){
+        if (tokenVec.at(i).id == id){
+            selToken = tokenVec.at(i);
+            found = true;
+        }
+    }
+
+    if (!found){
+        return;
+    }
+
+    cv::Point np = selToken.location;
+    cv::Scalar colour[2];
+    colour[0] = cv::Scalar(15, 169, 15);
+    colour[1] = cv::Scalar(7, 85, 7);
+
+    std::vector<cv::Point> plotSquares;
+    plotSquares.push_back(np);
+
+    for (int i = 0; i < movementPieces.size(); i++){
+        std::string move = movementPieces.at(i);
+
+        //if (movementPieces.at(i) == "UL" || movementPieces.at(i) == "UR" || movementPieces.at(i) == "DL" || movementPieces.at(i) == "DR"){
+
+        if (move == "UL"){
+            plotSquares.push_back(cv::Point(plotSquares.at(i).x - 1, plotSquares.at(i).y - 1));
+        } else if (move == "L"){
+            plotSquares.push_back(cv::Point(plotSquares.at(i).x, plotSquares.at(i).y - 1));
+        } else if (move == "DL"){
+            plotSquares.push_back(cv::Point(plotSquares.at(i).x + 1, plotSquares.at(i).y - 1));
+        } else if (move == "D") {
+
+        } else if (move == "RD") {
+
+        } else if (move == "R"){
+
+        } else if (move == "UR"){
+
+        } else if (move == "U"){
+
+        }
+    }
+
+    cv::Mat pMat;
+    finalMat.copyTo(pMat);
+
+    for (int i = 0; i < plotSquares.size(); i++){
+        int j = 0, k = 0;
+        j = plotSquares.at(i).x;
+        k = plotSquares.at(i).y;
+
+        if (j >= 0 && j <= vSize){
+            if (k >= 0 && k <= hSize){
+                grid[j][k].shadeSquare(finalMat, colour[0]);
+            }
+        }
+
+    }
+
+    addWeighted( finalMat, alpha, pMat, 1.0 - alpha, 0.0, finalMat);
+
 
 }
 
@@ -2573,8 +2642,13 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
         findTokens(partMat, finalMat);
 
         if (gridType == MOVEMENT) {
-            if (selectedID != -1){
+            if (selectedID != -1) {
                 colourRange(selectedID, 0.5, finalMat);
+            }
+            drawTokens(finalMat); // No transparency for tokens. Doesn't work well, becomes muddied.
+        } else if (gridType == PLOTTING){
+            if (selectedID != -1) {
+                colourPlot(selectedID, 0.5, finalMat);
             }
             drawTokens(finalMat); // No transparency for tokens. Doesn't work well, becomes muddied.
         } else if (gridType == ATTACK) {
@@ -2768,7 +2842,6 @@ Java_com_example_raven_pathfindar_MainActivity_setTokenList(JNIEnv *env, jobject
 
 extern "C"
 JNIEXPORT jstring JNICALL Java_com_example_raven_pathfindar_MainActivity_getTokenList(JNIEnv *env, jobject obj) {
-
     std::string out = "";
 
     for (int i = 0; i < tokenVec.size(); i++){
@@ -2782,20 +2855,50 @@ JNIEXPORT jstring JNICALL Java_com_example_raven_pathfindar_MainActivity_getToke
     return result;
 }
 
+void calcMRemain(){
+    int diagonal = 0;
+
+    bool found = false;
+
+    for (int i = 0; i < tokenVec.size(); i++){
+        if (tokenVec.at(i).id == selectedID){
+            mRemain = tokenVec.at(i).mRange;
+            found = true;
+        }
+    }
+
+    if (!found){
+        return;
+    }
+
+
+    for (int i = 0; i < movementPieces.size(); i++){
+        if (movementPieces.at(i) == "UL" || movementPieces.at(i) == "UR" || movementPieces.at(i) == "DL" || movementPieces.at(i) == "DR"){
+            diagonal++;
+            if (diagonal % 2 == 1){
+                mRemain -= 5;
+            } else {
+                mRemain -= 10;
+            }
+        } else {
+            mRemain -= 5;
+        }
+    }
+}
 
 extern "C"
 void
 Java_com_example_raven_pathfindar_MainActivity_setPlottingPath(JNIEnv *env, jobject instance, jstring inString) {
-
     const jsize len = env->GetStringUTFLength(inString);
     const char* strChars = env->GetStringUTFChars(inString, (jboolean *)0);
 
     std::string procString(strChars, len);
 
+    movementPieces.clear();
+
     split(procString, '-', movementPieces);
-
+    calcMRemain();
 }
-
 
 extern "C"
 JNIEXPORT jint JNICALL Java_com_example_raven_pathfindar_MainActivity_getMovementRemain(JNIEnv *env, jobject obj) {

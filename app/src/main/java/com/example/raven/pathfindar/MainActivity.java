@@ -669,42 +669,72 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         return false;
     }
 
+    public void updateMRemainLabel(){
+        TextView mRLabel = (TextView)findViewById(R.id.tv_mRemain);
+        mRLabel.setText(Integer.toString(mRemaining));
+    }
 
     public void adjustPathUpLeft(View view) {
         plotPath = plotPath.concat("UL-");
         setPlottingPath(plotPath);
         mRemaining = getMovementRemain();
-
-
-
+        updateMRemainLabel();
     }
 
     public void adjustPathLeft(View view) {
         plotPath = plotPath.concat("L-");
+        setPlottingPath(plotPath);
+        mRemaining = getMovementRemain();
+        updateMRemainLabel();
     }
 
     public void adjustPathDownLeft(View view) {
         plotPath = plotPath.concat("DL-");
+        setPlottingPath(plotPath);
+        mRemaining = getMovementRemain();
+        updateMRemainLabel();
     }
 
     public void adjustPathDown(View view) {
         plotPath = plotPath.concat("D-");
+        setPlottingPath(plotPath);
+        mRemaining = getMovementRemain();
+        updateMRemainLabel();
     }
 
     public void adjustPathDownRight(View view) {
         plotPath = plotPath.concat("DR-");
+        setPlottingPath(plotPath);
+        mRemaining = getMovementRemain();
+        updateMRemainLabel();
     }
 
     public void adjustPathRight(View view) {
         plotPath = plotPath.concat("R-");
+        setPlottingPath(plotPath);
+        mRemaining = getMovementRemain();
+        updateMRemainLabel();
     }
 
     public void adjustPathUpRight(View view) {
         plotPath = plotPath.concat("UR-");
+        setPlottingPath(plotPath);
+        mRemaining = getMovementRemain();
+        updateMRemainLabel();
     }
 
     public void adjustPathUp(View view) {
         plotPath = plotPath.concat("U-");
+        setPlottingPath(plotPath);
+        mRemaining = getMovementRemain();
+        updateMRemainLabel();
+    }
+
+    public void resetPath(View view) {
+        plotPath = "";
+        setPlottingPath(plotPath);
+        mRemaining = getMovementRemain();
+        updateMRemainLabel();
     }
 
     public native void detectMarkers(long image_final,long image_editable);
