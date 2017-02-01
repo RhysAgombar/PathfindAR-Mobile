@@ -247,6 +247,11 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
         if (gridToggle == MOVEMENT) {
             gridToggle = PLOTTING;
+            Button toggleButton = (Button)findViewById(R.id.bt_swapGridType);
+            toggleButton.setText("Plotting");
+
+            mRemaining = getMovementRemain();
+            updateMRemainLabel();
 
         } else if (gridToggle == PLOTTING){
             gridToggle = ATTACK;
@@ -643,6 +648,68 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             setSelectedWeapon(-1);
         }
 
+
+        if (gridToggle == MOVEMENT) {
+            Button toggleButton = (Button)findViewById(R.id.bt_swapGridType);
+            toggleButton.setText("Move");
+
+            Button w1 = (Button)findViewById(R.id.bt_selWeapon1);
+            Button w2 = (Button)findViewById(R.id.bt_selWeapon2);
+            Button w3 = (Button)findViewById(R.id.bt_selWeapon3);
+            Button w4 = (Button)findViewById(R.id.bt_selWeapon4);
+            w1.setVisibility(View.INVISIBLE);
+            w2.setVisibility(View.INVISIBLE);
+            w3.setVisibility(View.INVISIBLE);
+            w4.setVisibility(View.INVISIBLE);
+
+            setSelectedWeapon(-1);
+        } else if (gridToggle == PLOTTING){
+            Button toggleButton = (Button)findViewById(R.id.bt_swapGridType);
+            toggleButton.setText("Plotting");
+
+            plotPath = "";
+            setPlottingPath(plotPath);
+
+            mRemaining = getMovementRemain();
+            updateMRemainLabel();
+        } else {
+            Button toggleButton = (Button) findViewById(R.id.bt_swapGridType);
+            toggleButton.setText("Attack");
+
+            if (selToken >= 0) {
+                Button w1 = (Button) findViewById(R.id.bt_selWeapon1);
+                Button w2 = (Button) findViewById(R.id.bt_selWeapon2);
+                Button w3 = (Button) findViewById(R.id.bt_selWeapon3);
+                Button w4 = (Button) findViewById(R.id.bt_selWeapon4);
+
+                Token selectedToken = tokenList.get(selToken);
+
+                if (!selectedToken.w1.name.equals("")) {
+                    w1.setVisibility(View.VISIBLE);
+                } else {
+                    w1.setVisibility(View.INVISIBLE);
+                }
+
+                if (!selectedToken.w2.name.equals("")) {
+                    w2.setVisibility(View.VISIBLE);
+                } else {
+                    w2.setVisibility(View.INVISIBLE);
+                }
+
+                if (!selectedToken.w3.name.equals("")) {
+                    w3.setVisibility(View.VISIBLE);
+                } else {
+                    w3.setVisibility(View.INVISIBLE);
+                }
+
+                if (!selectedToken.w4.name.equals("")) {
+                    w4.setVisibility(View.VISIBLE);
+                } else {
+                    w4.setVisibility(View.INVISIBLE);
+                }
+            }
+        }
+
         paused = true;
 
     }
@@ -674,60 +741,126 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         mRLabel.setText(Integer.toString(mRemaining));
     }
 
+    public boolean overextended(){
+
+        for (int i = 0; i < tokenList.size(); i++){
+            if (tokenList.get(i).id == selToken){
+                mRemaining = tokenList.get(i).mRange;
+            }
+        }
+
+        String[] parts = plotPath.split("-");
+
+        int diagonal = 0;
+
+        for (int i = 0; i < parts.length; i++){
+            if (parts[i].equals("UL") || parts[i].equals("UR") || parts[i].equals("DL") || parts[i].equals("DR")){
+                diagonal++;
+                if (diagonal % 2 == 1){
+                    mRemaining -= 5;
+                } else {
+                    mRemaining -= 10;
+                }
+            } else {
+                mRemaining -= 5;
+            }
+        }
+
+        if (mRemaining < 0){
+            mRemaining = getMovementRemain();
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
     public void adjustPathUpLeft(View view) {
         plotPath = plotPath.concat("UL-");
-        setPlottingPath(plotPath);
-        mRemaining = getMovementRemain();
-        updateMRemainLabel();
+        if (!overextended()) {
+            setPlottingPath(plotPath);
+            mRemaining = getMovementRemain();
+            updateMRemainLabel();
+        } else {
+            plotPath = plotPath.substring(0, plotPath.length() - 3);
+        }
     }
 
     public void adjustPathLeft(View view) {
         plotPath = plotPath.concat("L-");
-        setPlottingPath(plotPath);
-        mRemaining = getMovementRemain();
-        updateMRemainLabel();
+        if (!overextended()) {
+            setPlottingPath(plotPath);
+            mRemaining = getMovementRemain();
+            updateMRemainLabel();
+        } else {
+            plotPath = plotPath.substring(0, plotPath.length() - 2);
+        }
     }
 
     public void adjustPathDownLeft(View view) {
         plotPath = plotPath.concat("DL-");
-        setPlottingPath(plotPath);
-        mRemaining = getMovementRemain();
-        updateMRemainLabel();
+        if (!overextended()) {
+            setPlottingPath(plotPath);
+            mRemaining = getMovementRemain();
+            updateMRemainLabel();
+        } else {
+            plotPath = plotPath.substring(0, plotPath.length() - 3);
+        }
     }
 
     public void adjustPathDown(View view) {
         plotPath = plotPath.concat("D-");
-        setPlottingPath(plotPath);
-        mRemaining = getMovementRemain();
-        updateMRemainLabel();
+        if (!overextended()) {
+            setPlottingPath(plotPath);
+            mRemaining = getMovementRemain();
+            updateMRemainLabel();
+        } else {
+            plotPath = plotPath.substring(0, plotPath.length() - 2);
+        }
     }
 
     public void adjustPathDownRight(View view) {
         plotPath = plotPath.concat("DR-");
-        setPlottingPath(plotPath);
-        mRemaining = getMovementRemain();
-        updateMRemainLabel();
+        if (!overextended()) {
+            setPlottingPath(plotPath);
+            mRemaining = getMovementRemain();
+            updateMRemainLabel();
+        } else {
+            plotPath = plotPath.substring(0, plotPath.length() - 3);
+        }
     }
 
     public void adjustPathRight(View view) {
         plotPath = plotPath.concat("R-");
-        setPlottingPath(plotPath);
-        mRemaining = getMovementRemain();
-        updateMRemainLabel();
+        if (!overextended()) {
+            setPlottingPath(plotPath);
+            mRemaining = getMovementRemain();
+            updateMRemainLabel();
+        } else {
+            plotPath = plotPath.substring(0, plotPath.length() - 2);
+        }
     }
 
     public void adjustPathUpRight(View view) {
         plotPath = plotPath.concat("UR-");
-        setPlottingPath(plotPath);
-        mRemaining = getMovementRemain();
-        updateMRemainLabel();
+        if (!overextended()) {
+            setPlottingPath(plotPath);
+            mRemaining = getMovementRemain();
+            updateMRemainLabel();
+        } else {
+            plotPath = plotPath.substring(0, plotPath.length() - 3);
+        }
     }
 
     public void adjustPathUp(View view) {
         plotPath = plotPath.concat("U-");
-        setPlottingPath(plotPath);
-        mRemaining = getMovementRemain();
-        updateMRemainLabel();
+        if (!overextended()) {
+            setPlottingPath(plotPath);
+            mRemaining = getMovementRemain();
+            updateMRemainLabel();
+        } else {
+            plotPath = plotPath.substring(0, plotPath.length() - 2);
+        }
     }
 
     public void resetPath(View view) {

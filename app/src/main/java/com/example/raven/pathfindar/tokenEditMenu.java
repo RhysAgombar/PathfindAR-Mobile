@@ -274,6 +274,14 @@ public class tokenEditMenu extends MainActivity{
         toast.show();
     }
 
+    public void saveTokenToDB(View view) {
+
+    }
+
+    public void loadTokenFromDB(View view) {
+
+    }
+
     /*
 
 

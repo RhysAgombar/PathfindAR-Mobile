@@ -820,8 +820,8 @@ void idTokens() {
         if (tokenVec.at(i).found == true) {
             tokenVec.at(i).lifespan++;
 
-            if (tokenVec.at(i).lifespan > 50) {
-                tokenVec.at(i).lifespan = 50;
+            if (tokenVec.at(i).lifespan > 25) {
+                tokenVec.at(i).lifespan = 25;
             }
 
         }
@@ -1309,15 +1309,15 @@ void colourPlot(int id, double alpha, cv::Mat finalMat){
         } else if (move == "DL"){
             plotSquares.push_back(cv::Point(plotSquares.at(i).x + 1, plotSquares.at(i).y - 1));
         } else if (move == "D") {
-
-        } else if (move == "RD") {
-
+            plotSquares.push_back(cv::Point(plotSquares.at(i).x + 1, plotSquares.at(i).y));
+        } else if (move == "DR") {
+            plotSquares.push_back(cv::Point(plotSquares.at(i).x + 1, plotSquares.at(i).y + 1));
         } else if (move == "R"){
-
+            plotSquares.push_back(cv::Point(plotSquares.at(i).x, plotSquares.at(i).y + 1));
         } else if (move == "UR"){
-
+            plotSquares.push_back(cv::Point(plotSquares.at(i).x - 1, plotSquares.at(i).y + 1));
         } else if (move == "U"){
-
+            plotSquares.push_back(cv::Point(plotSquares.at(i).x - 1, plotSquares.at(i).y));
         }
     }
 
@@ -2697,6 +2697,13 @@ extern "C"
 void
 Java_com_example_raven_pathfindar_MainActivity_setSelectedToken(JNIEnv *env, jobject instance, jint tokenID) {
     selectedID = tokenID;
+
+    for (int i = 0; i < tokenVec.size(); i++){
+        if (tokenVec.at(i).id == selectedID){
+            mRemain = tokenVec.at(i).mRange;
+        }
+    }
+
 }
 
 extern "C"
@@ -2870,7 +2877,6 @@ void calcMRemain(){
     if (!found){
         return;
     }
-
 
     for (int i = 0; i < movementPieces.size(); i++){
         if (movementPieces.at(i) == "UL" || movementPieces.at(i) == "UR" || movementPieces.at(i) == "DL" || movementPieces.at(i) == "DR"){
