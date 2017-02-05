@@ -171,7 +171,6 @@ public class tokenEditMenu extends MainActivity{
 
     }
 
-
     public void decrementRange1(View view) {
         TextView w1Range = (TextView)findViewById(R.id.tv_numW1);
         if (selectedToken.w1.range > 0){
@@ -275,11 +274,99 @@ public class tokenEditMenu extends MainActivity{
     }
 
     public void saveTokenToDB(View view) {
+        final TokenDBHelper db = new TokenDBHelper(this);
 
+        db.addNewElement(selectedToken);
+
+        Toast toast = Toast.makeText(this, "Token Saved to Database", Toast.LENGTH_SHORT);
+        toast.show();
     }
 
     public void loadTokenFromDB(View view) {
+        Intent intent = new Intent(this, tokenLoadMenu.class);
 
+        startActivityForResult(intent, 1);
+    }
+
+
+    public void onActivityResult(int req, int res, Intent in){
+
+        int id = in.getIntExtra("tokenID", -1);
+
+        if (id == -1){
+            return;
+        }
+
+        final TokenDBHelper db = new TokenDBHelper(this);
+        Token copyToken = db.getElementByID(Integer.toString(id));
+
+        selectedToken.name = copyToken.name;
+        selectedToken.mRange = copyToken.mRange;
+        selectedToken.w1 = copyToken.w1;
+        selectedToken.w2 = copyToken.w2;
+        selectedToken.w3 = copyToken.w3;
+        selectedToken.w4 = copyToken.w4;
+
+        EditText tokenName = (EditText)findViewById(R.id.et_editTokenName);
+        tokenName.setText(selectedToken.name);
+
+        EditText w1Name = (EditText)findViewById(R.id.et_editW1Name);
+        w1Name.setText(selectedToken.w1.name);
+
+        EditText w2Name = (EditText)findViewById(R.id.et_editW2Name);
+        w2Name.setText(selectedToken.w2.name);
+
+        EditText w3Name = (EditText)findViewById(R.id.et_editW3Name);
+        w3Name.setText(selectedToken.w3.name);
+
+        EditText w4Name = (EditText)findViewById(R.id.et_editW4Name);
+        w4Name.setText(selectedToken.w4.name);
+
+        TextView movement = (TextView)findViewById(R.id.tv_numMR);
+        movement.setText(Integer.toString(selectedToken.mRange));
+
+        TextView w1Range = (TextView)findViewById(R.id.tv_numW1);
+        w1Range.setText(Integer.toString(selectedToken.w1.range));
+
+        TextView w2Range = (TextView)findViewById(R.id.tv_numW2);
+        w2Range.setText(Integer.toString(selectedToken.w2.range));
+
+        TextView w3Range = (TextView)findViewById(R.id.tv_numW3);
+        w3Range.setText(Integer.toString(selectedToken.w3.range));
+
+        TextView w4Range = (TextView)findViewById(R.id.tv_numW4);
+        w4Range.setText(Integer.toString(selectedToken.w4.range));
+
+
+        CheckBox w1Reach = (CheckBox)findViewById(R.id.cb_reach1);
+        w1Reach.setChecked(selectedToken.w1.reach);
+
+        CheckBox w2Reach = (CheckBox)findViewById(R.id.cb_reach2);
+        w2Reach.setChecked(selectedToken.w2.reach);
+
+        CheckBox w3Reach = (CheckBox)findViewById(R.id.cb_reach3);
+        w3Reach.setChecked(selectedToken.w3.reach);
+
+        CheckBox w4Reach = (CheckBox)findViewById(R.id.cb_reach4);
+        w4Reach.setChecked(selectedToken.w4.reach);
+
+
+        CheckBox w1Ranged = (CheckBox)findViewById(R.id.cb_ranged1);
+        w1Ranged.setChecked(selectedToken.w1.ranged);
+
+        CheckBox w2Ranged = (CheckBox)findViewById(R.id.cb_ranged2);
+        w2Ranged.setChecked(selectedToken.w2.ranged);
+
+        CheckBox w3Ranged = (CheckBox)findViewById(R.id.cb_ranged3);
+        w3Ranged.setChecked(selectedToken.w3.ranged);
+
+        CheckBox w4Ranged = (CheckBox)findViewById(R.id.cb_ranged4);
+        w4Ranged.setChecked(selectedToken.w4.ranged);
+
+        tokenList.set(position, selectedToken);
+
+        Toast toast = Toast.makeText(this, "Token Updated", Toast.LENGTH_SHORT);
+        toast.show();
     }
 
     /*

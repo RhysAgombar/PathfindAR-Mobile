@@ -32,6 +32,8 @@
                   android:screenOrientation="landscape"/>
         <activity android:name=".tokenEditMenu"
             android:screenOrientation="landscape"/>
+        <activity android:name=".tokenLoadMenu"
+            android:screenOrientation="landscape"/>
     </application>
 
 </manifest>

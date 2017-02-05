@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
@@ -31,6 +32,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.hardware.camera2.params.*;
 
@@ -126,6 +128,9 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         w2.setVisibility(View.INVISIBLE);
         w3.setVisibility(View.INVISIBLE);
         w4.setVisibility(View.INVISIBLE);
+
+        RelativeLayout dpad = (RelativeLayout)findViewById(R.id.layt_dPad);
+        dpad.setVisibility(View.INVISIBLE);
 
         setSelectedWeapon(-1);
 
@@ -250,6 +255,9 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             Button toggleButton = (Button)findViewById(R.id.bt_swapGridType);
             toggleButton.setText("Plotting");
 
+            RelativeLayout dpad = (RelativeLayout)findViewById(R.id.layt_dPad);
+            dpad.setVisibility(View.VISIBLE);
+
             mRemaining = getMovementRemain();
             updateMRemainLabel();
 
@@ -258,6 +266,9 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
             Button toggleButton = (Button) findViewById(R.id.bt_swapGridType);
             toggleButton.setText("Attack");
+
+            RelativeLayout dpad = (RelativeLayout)findViewById(R.id.layt_dPad);
+            dpad.setVisibility(View.INVISIBLE);
 
             if (selToken >= 0) {
                 Button w1 = (Button) findViewById(R.id.bt_selWeapon1);
@@ -297,6 +308,9 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             Button toggleButton = (Button)findViewById(R.id.bt_swapGridType);
             toggleButton.setText("Move");
 
+            RelativeLayout dpad = (RelativeLayout)findViewById(R.id.layt_dPad);
+            dpad.setVisibility(View.INVISIBLE);
+
             Button w1 = (Button)findViewById(R.id.bt_selWeapon1);
             Button w2 = (Button)findViewById(R.id.bt_selWeapon2);
             Button w3 = (Button)findViewById(R.id.bt_selWeapon3);
@@ -307,6 +321,8 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             w4.setVisibility(View.INVISIBLE);
 
             setSelectedWeapon(-1);
+
+
 
         }
 

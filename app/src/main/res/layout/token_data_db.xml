@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants">
+
+    <TextView
+        android:id="@+id/tv_tokenName_DB"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_alignParentTop="true"
+        android:paddingLeft="10dp"
+        android:ellipsize="end"
+        android:textStyle="bold"
+        android:textSize="18dp"
+        android:text="Token Name" />
+
+    <TextView
+        android:id="@+id/tv_movementLabel_DB"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_tokenName_DB"
+        android:paddingLeft="10dp"
+        android:textStyle="bold"
+        android:text="Move:"/>
+
+    <TextView
+        android:id="@+id/tv_movement_DB"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_tokenName_DB"
+        android:layout_toRightOf="@id/tv_movementLabel_DB"
+        android:paddingLeft="5dp"
+        android:text="3000ft"/>
+
+    <TextView
+        android:id="@+id/tv_rangeLabel_DB"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_movement_DB"
+        android:paddingLeft="10dp"
+        android:textStyle="bold"
+        android:text="Ranges:"/>
+
+    <TextView
+        android:id="@+id/tv_range1_DB"
+        android:layout_width="200dp"
+        android:layout_height="20dp"
+        android:layout_below="@id/tv_rangeLabel_DB"
+        android:paddingLeft="10dp"
+        android:text="Halberd and Shield 1:"/>
+
+    <TextView
+        android:id="@+id/tv_range3_DB"
+        android:layout_width="200dp"
+        android:layout_height="20dp"
+        android:layout_below="@id/tv_rangeLabel_DB"
+        android:layout_toRightOf="@id/tv_range1_DB"
+        android:paddingLeft="10dp"
+        android:text="Halberd and Shield 1:"/>
+
+    <TextView
+        android:id="@+id/tv_range2_DB"
+        android:layout_width="200dp"
+        android:layout_height="20dp"
+        android:layout_below="@id/tv_range1_DB"
+        android:paddingLeft="10dp"
+        android:text="Halberd and Shield 2:"/>
+
+    <TextView
+        android:id="@+id/tv_range4_DB"
+        android:layout_width="200dp"
+        android:layout_height="20dp"
+        android:layout_below="@id/tv_range1_DB"
+        android:layout_toRightOf="@id/tv_range2_DB"
+        android:paddingLeft="10dp"
+        android:text="Halberd and Shield 1:"/>
+
+    <Button
+        android:id="@+id/bt_deleteToken_DB"
+        android:layout_width="80dp"
+        android:layout_height="90dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:text="Delete"/>
+
+
+</RelativeLayout>
