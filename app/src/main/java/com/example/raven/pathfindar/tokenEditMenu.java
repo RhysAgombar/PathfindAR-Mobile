@@ -274,11 +274,30 @@ public class tokenEditMenu extends MainActivity{
     }
 
     public void saveTokenToDB(View view) {
+        selectedToken.name = ((EditText)findViewById(R.id.et_editTokenName)).getText().toString();
+
+        selectedToken.w1.name = ((EditText)findViewById(R.id.et_editW1Name)).getText().toString();
+        selectedToken.w2.name = ((EditText)findViewById(R.id.et_editW2Name)).getText().toString();
+        selectedToken.w3.name = ((EditText)findViewById(R.id.et_editW3Name)).getText().toString();
+        selectedToken.w4.name = ((EditText)findViewById(R.id.et_editW4Name)).getText().toString();
+
+        selectedToken.w1.ranged = ((CheckBox)findViewById(R.id.cb_ranged1)).isChecked();
+        selectedToken.w2.ranged = ((CheckBox)findViewById(R.id.cb_ranged2)).isChecked();
+        selectedToken.w3.ranged = ((CheckBox)findViewById(R.id.cb_ranged3)).isChecked();
+        selectedToken.w4.ranged = ((CheckBox)findViewById(R.id.cb_ranged4)).isChecked();
+
+        selectedToken.w1.reach = ((CheckBox)findViewById(R.id.cb_reach1)).isChecked();
+        selectedToken.w2.reach = ((CheckBox)findViewById(R.id.cb_reach2)).isChecked();
+        selectedToken.w3.reach = ((CheckBox)findViewById(R.id.cb_reach3)).isChecked();
+        selectedToken.w4.reach = ((CheckBox)findViewById(R.id.cb_reach4)).isChecked();
+
+        tokenList.set(position, selectedToken);
+
         final TokenDBHelper db = new TokenDBHelper(this);
 
         db.addNewElement(selectedToken);
 
-        Toast toast = Toast.makeText(this, "Token Saved to Database", Toast.LENGTH_SHORT);
+        Toast toast = Toast.makeText(this, "Token Updated & Saved to Database", Toast.LENGTH_SHORT);
         toast.show();
     }
 
@@ -368,58 +387,5 @@ public class tokenEditMenu extends MainActivity{
         Toast toast = Toast.makeText(this, "Token Updated", Toast.LENGTH_SHORT);
         toast.show();
     }
-
-    /*
-
-
-    public void decrementRange1(View view) {
-        TextView w1Range = (TextView)findViewById(R.id.tv_numW1);
-        int holder = selectedToken.w1.range - 5;
-        w1Range.setText(Integer.toString(holder));
-    }
-
-    public void incrementRange1(View view) {
-        TextView w1Range = (TextView)findViewById(R.id.tv_numW1);
-        int holder = selectedToken.w1.range + 5;
-        w1Range.setText(Integer.toString(holder));
-    }
-
-    public void decrementRange2(View view) {
-        TextView w2Range = (TextView)findViewById(R.id.tv_numW2);
-        int holder = selectedToken.w2.range - 5;
-        w2Range.setText(Integer.toString(holder));
-    }
-
-    public void incrementRange2(View view) {
-        TextView w2Range = (TextView)findViewById(R.id.tv_numW2);
-        int holder = selectedToken.w2.range + 5;
-        w2Range.setText(Integer.toString(holder));
-    }
-
-    public void decrementRange3(View view) {
-        TextView w3Range = (TextView)findViewById(R.id.tv_numW3);
-        int holder = selectedToken.w3.range - 5;
-        w3Range.setText(Integer.toString(holder));
-    }
-
-    public void incrementRange3(View view) {
-        TextView w3Range = (TextView)findViewById(R.id.tv_numW3);
-        int holder = selectedToken.w3.range + 5;
-        w3Range.setText(Integer.toString(holder));
-    }
-
-    public void decrementRange4(View view) {
-        TextView w4Range = (TextView)findViewById(R.id.tv_numW4);
-        int holder = selectedToken.w4.range - 5;
-        w4Range.setText(Integer.toString(holder));
-    }
-
-    public void incrementRange4(View view) {
-        TextView w4Range = (TextView)findViewById(R.id.tv_numW4);
-        int holder = selectedToken.w4.range + 5;
-        w4Range.setText(Integer.toString(holder));
-    }
-
-     */
 
 }
