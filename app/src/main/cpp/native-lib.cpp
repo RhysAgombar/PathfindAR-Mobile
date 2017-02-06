@@ -1355,7 +1355,7 @@ void drawBlastTemplate(cv::Mat inMat, int type, int size, float alpha){
     if (type == SPHERE) {
 
         float dist = 1e9;
-        cv::Point3i inter;
+        cv::Point3i inter = cv::Point3i(-1,-1,-1);
 
         if (intersection.x == -1) {
             bool flag = false;
@@ -1390,6 +1390,10 @@ void drawBlastTemplate(cv::Mat inMat, int type, int size, float alpha){
         inter.y = intersection.y;
         inter.z = intersection.z;
 
+        if (inter.x == -1){
+            return;
+        }
+
         cv::circle(inMat, grid[inter.x][inter.y].corner[inter.z], 5, cv::Scalar(255, 0, 0), -1);
         std::vector<cv::Point> startPos;
 
@@ -1419,7 +1423,7 @@ void drawBlastTemplate(cv::Mat inMat, int type, int size, float alpha){
             startPos.push_back(cv::Point(inter.x + 1, inter.y - 1));
         }
 
-        int radius = (size - 1) / 5; // Convert from ft. to squares
+        int radius = size / 5; // Convert from ft. to squares
 
         double countRadius = 0.0;
 
@@ -1433,6 +1437,210 @@ void drawBlastTemplate(cv::Mat inMat, int type, int size, float alpha){
             countRadius += 1.5;
             diagonal++;
         }
+
+
+        // Upper Left
+        pos = startPos.at(0);
+
+        int count = 0;
+        int remaining = radius;
+        for (int i = 0; i < diagonal; i++){
+            cv::Point current;
+            current.x = pos.x - i;
+            current.y = pos.y - i;
+
+            positions.push_back(current);
+
+            if ((count % 2) == 0){
+                remaining -= 1;
+            } else {
+                remaining -= 2;
+            }
+
+            for (int j = 1; j <= remaining; j++){
+                current.x -= 1;
+                positions.push_back(current);
+            }
+
+            count++;
+        }
+
+        count = 0;
+        remaining = radius;
+        for (int i = 0; i < diagonal; i++){
+            cv::Point current;
+            current.x = pos.x - i;
+            current.y = pos.y - i;
+
+            positions.push_back(current);
+
+            if ((count % 2) == 0){
+                remaining -= 1;
+            } else {
+                remaining -= 2;
+            }
+
+            for (int j = 1; j <= remaining; j++){
+                current.y -= 1;
+                positions.push_back(current);
+            }
+
+            count++;
+        }
+
+        // Upper Right
+        pos = startPos.at(1);
+
+        count = 0;
+        remaining = radius;
+        for (int i = 0; i < diagonal; i++){
+            cv::Point current;
+            current.x = pos.x - i;
+            current.y = pos.y + i;
+
+            positions.push_back(current);
+
+            if ((count % 2) == 0){
+                remaining -= 1;
+            } else {
+                remaining -= 2;
+            }
+
+            for (int j = 1; j <= remaining; j++){
+                current.x -= 1;
+                positions.push_back(current);
+            }
+
+            count++;
+        }
+
+        count = 0;
+        remaining = radius;
+        for (int i = 0; i < diagonal; i++){
+            cv::Point current;
+            current.x = pos.x - i;
+            current.y = pos.y + i;
+
+            positions.push_back(current);
+
+            if ((count % 2) == 0){
+                remaining -= 1;
+            } else {
+                remaining -= 2;
+            }
+
+            for (int j = 1; j <= remaining; j++){
+                current.y += 1;
+                positions.push_back(current);
+            }
+
+            count++;
+        }
+
+        // Lower Right
+        pos = startPos.at(2);
+
+        count = 0;
+        remaining = radius;
+        for (int i = 0; i < diagonal; i++){
+            cv::Point current;
+            current.x = pos.x + i;
+            current.y = pos.y + i;
+
+            positions.push_back(current);
+
+            if ((count % 2) == 0){
+                remaining -= 1;
+            } else {
+                remaining -= 2;
+            }
+
+            for (int j = 1; j <= remaining; j++){
+                current.y += 1;
+                positions.push_back(current);
+            }
+
+            count++;
+        }
+
+        count = 0;
+        remaining = radius;
+        for (int i = 0; i < diagonal; i++){
+            cv::Point current;
+            current.x = pos.x + i;
+            current.y = pos.y + i;
+
+            positions.push_back(current);
+
+            if ((count % 2) == 0){
+                remaining -= 1;
+            } else {
+                remaining -= 2;
+            }
+
+            for (int j = 1; j <= remaining; j++){
+                current.x += 1;
+                positions.push_back(current);
+            }
+
+            count++;
+        }
+
+
+        // Lower Left
+
+        pos = startPos.at(3);
+        count = 0;
+        remaining = radius;
+        for (int i = 0; i < diagonal; i++){
+            cv::Point current;
+            current.x = pos.x + i;
+            current.y = pos.y - i;
+
+            positions.push_back(current);
+
+            if ((count % 2) == 0){
+                remaining -= 1;
+            } else {
+                remaining -= 2;
+            }
+
+            for (int j = 1; j <= remaining; j++){
+                current.x += 1;
+                positions.push_back(current);
+            }
+
+            count++;
+        }
+
+        count = 0;
+        remaining = radius;
+        for (int i = 0; i < diagonal; i++){
+            cv::Point current;
+            current.x = pos.x + i;
+            current.y = pos.y - i;
+
+            positions.push_back(current);
+
+            if ((count % 2) == 0){
+                remaining -= 1;
+            } else {
+                remaining -= 2;
+            }
+
+            for (int j = 1; j <= remaining; j++){
+                current.y -= 1;
+                positions.push_back(current);
+            }
+
+            count++;
+        }
+
+
+
+
+
+/*
 
         // Upper Right
         holder = diagonal - 1;
@@ -1594,6 +1802,8 @@ void drawBlastTemplate(cv::Mat inMat, int type, int size, float alpha){
 
             diagonal--;
         }
+
+*/
 
 
         cv::Mat hMat;
@@ -2662,7 +2872,7 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
         };
 
         if (touchPoint.x != -1 && selectedBlast != -1){
-            cv::circle(finalMat, touchPoint, 5, cv::Scalar(255, 0, 0), -1);
+            //cv::circle(finalMat, touchPoint, 5, cv::Scalar(255, 0, 0), -1);
             drawBlastTemplate(finalMat, selectedBlast, blastRadius, 0.5);
         }
 
