@@ -1360,8 +1360,8 @@ void drawBlastTemplate(cv::Mat inMat, int type, int size, float alpha){
         if (intersection.x == -1) {
             bool flag = false;
 
-            for (int i = 0; i < hSize; i++) {
-                for (int j = 0; j < vSize; j++) {
+            for (int i = 0; i < vSize; i++) {
+                for (int j = 0; j < hSize; j++) {
                     if (grid[i][j].contains(touchPoint)) {
 
                         for (int k = 0; k < 4; k++) {
@@ -1419,7 +1419,7 @@ void drawBlastTemplate(cv::Mat inMat, int type, int size, float alpha){
             startPos.push_back(cv::Point(inter.x + 1, inter.y - 1));
         }
 
-        int radius = size / 5; // Convert from ft. to squares
+        int radius = (size - 1) / 5; // Convert from ft. to squares
 
         double countRadius = 0.0;
 
@@ -1435,7 +1435,7 @@ void drawBlastTemplate(cv::Mat inMat, int type, int size, float alpha){
         }
 
         // Upper Right
-        holder = diagonal;
+        holder = diagonal - 1;
         while (diagonal >= 0) {
             cv::Point current;
             current.x = pos.x - diagonal;
@@ -1638,8 +1638,8 @@ void drawBlastTemplate(cv::Mat inMat, int type, int size, float alpha){
         if (selSquare.x == -1) {
             bool flag = false;
 
-            for (int i = 0; i < hSize; i++) {
-                for (int j = 0; j < vSize; j++) {
+            for (int i = 0; i < vSize; i++) {
+                for (int j = 0; j < hSize; j++) {
                     if (grid[i][j].contains(touchPoint)) {
 
                         selSquare.x = i;
@@ -2394,8 +2394,8 @@ void drawBlastTemplate(cv::Mat inMat, int type, int size, float alpha){
         if (selSquare.x == -1) {
             bool flag = false;
 
-            for (int i = 0; i < hSize; i++) {
-                for (int j = 0; j < vSize; j++) {
+            for (int i = 0; i < vSize; i++) {
+                for (int j = 0; j < hSize; j++) {
                     if (grid[i][j].contains(touchPoint)) {
 
                         selSquare.x = i;
@@ -2496,6 +2496,9 @@ void drawBlastTemplate(cv::Mat inMat, int type, int size, float alpha){
 }
 
 cv::Mat four_point_transform(cv::Mat image, std::vector<cv::Point2f> gridCorners){
+
+    gridCorners = gridCorners;
+
     float widthA = sqrt(pow((gridCorners.at(2).x - gridCorners.at(3).x), 2) + pow((gridCorners.at(2).y - gridCorners.at(3).y), 2));
     float widthB = sqrt(pow((gridCorners.at(1).x - gridCorners.at(0).x), 2) + pow((gridCorners.at(1).y - gridCorners.at(0).y), 2));
     float maxW = 0.0;
@@ -2584,18 +2587,18 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
 
         std::vector<cv::Point2f> ngC; // New Grid Corners (from markers on ground)
         ngC.push_back(grid[0][0].corner[2]);
-        ngC.push_back(grid[0][vSize - 1].corner[3]);
-        ngC.push_back(grid[hSize - 1][vSize - 1].corner[0]);
-        ngC.push_back(grid[hSize - 1][0].corner[1]);
+        ngC.push_back(grid[0][hSize - 1].corner[3]);
+        ngC.push_back(grid[vSize - 1][hSize - 1].corner[0]);
+        ngC.push_back(grid[vSize - 1][0].corner[1]);
 
         cv::Mat dst = four_point_transform(finalMat, ngC);
 
         std::vector<cv::Point2f> sgC; // Straight Grid Corners (perfectly straight grid)
 
         sgC.push_back(grid[0][0].corner[2]);
-        sgC.push_back(grid[0][vSize - 1].corner[3]);
-        sgC.push_back(grid[hSize - 1][vSize - 1].corner[0]);
-        sgC.push_back(grid[hSize - 1][0].corner[1]);
+        sgC.push_back(grid[0][hSize - 1].corner[3]);
+        sgC.push_back(grid[vSize - 1][hSize - 1].corner[0]);
+        sgC.push_back(grid[vSize - 1][0].corner[1]);
 
         cv::Mat H = cv::findHomography(sgC, ngC);
 
@@ -2604,7 +2607,7 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
 
         // Project the points properly now
         std::vector<cv::Point2f> sX, rX; // start x, result x
-        for (int i = 0; i <= hSize; i++){ // queue each point from the horizontal lines
+        for (int i = 0; i <= vSize; i++){ // queue each point from the horizontal lines
             sX.push_back(hLines[i][0]);
             sX.push_back(hLines[i][1]);
         }
@@ -2613,7 +2616,7 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
         cv::perspectiveTransform(sX, rX, H);
 
         int j = 0;
-        for (int i = 0; i <= hSize; i++){ // reset them
+        for (int i = 0; i <= vSize; i++){ // reset them
             hLines[i][0] = rX.at(j);
             j++;
             hLines[i][1] = rX.at(j);
@@ -2622,7 +2625,7 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
 
 
         std::vector<cv::Point2f> sY, rY; // Start y, result y
-        for (int i = 0; i <= vSize; i++){
+        for (int i = 0; i <= hSize; i++){
             sY.push_back(vLines[i][0]);
             sY.push_back(vLines[i][1]);
         }
@@ -2630,7 +2633,7 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
         cv::perspectiveTransform(sY, rY, H);
 
         j = 0;
-        for (int i = 0; i <= vSize; i++){
+        for (int i = 0; i <= hSize; i++){
             vLines[i][0] = rY.at(j);
             j++;
             vLines[i][1] = rY.at(j);
