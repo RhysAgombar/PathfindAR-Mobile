@@ -23,12 +23,13 @@
         android:textAlignment="center"
         android:textSize="20dp"/>
 
-    <Button
+    <ImageButton
         android:id="@+id/btn_tracking"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_gravity="bottom|right"
-        android:text="Toggle Tracking"
+        android:scaleType="fitXY"
+        android:src="@drawable/play"
         android:onClick="toggleTracking"/>
 
     <RelativeLayout
@@ -36,19 +37,21 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom">
 
-        <Button
+        <ImageButton
             android:id="@+id/bt_blastTemplate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Blast"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/fireball"
             android:onClick="toggleBlastTemplate"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/bt_swapGridType"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_below="@id/bt_blastTemplate"
-            android:text="Move"
+            android:scaleType="fitXY"
+            android:src="@drawable/fwayarrow"
             android:onClick="toggleGridType"/>
 
         <Button
@@ -93,20 +96,22 @@
         android:layout_height="wrap_content"
         android:layout_gravity="right">
 
-        <Button
+        <ImageButton
             android:id="@+id/bt_gridMen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Menu"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/gear"
             android:onClick="openGridMenu"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/btn_tokeMen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_gravity="center_horizontal|bottom"
             android:layout_below="@id/bt_gridMen"
-            android:text="Tokens"
+            android:scaleType="fitXY"
+            android:src="@drawable/pawn"
             android:onClick="openTokenMenu"/>
 
     </RelativeLayout>
@@ -116,40 +121,44 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal">
 
-    <Button
+    <ImageButton
         android:id="@+id/bt_selWeapon1"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignParentStart="true"
         android:visibility="invisible"
-        android:text="1"
+        android:scaleType="fitXY"
+        android:src="@drawable/sword1"
         android:onClick="selWeapon1"/>
 
-    <Button
+    <ImageButton
         android:id="@+id/bt_selWeapon2"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_toRightOf="@id/bt_selWeapon1"
         android:visibility="invisible"
-        android:text="2"
+        android:scaleType="fitXY"
+        android:src="@drawable/sword2"
         android:onClick="selWeapon2"/>
 
-    <Button
+    <ImageButton
         android:id="@+id/bt_selWeapon3"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_toRightOf="@id/bt_selWeapon2"
         android:visibility="invisible"
-        android:text="3"
+        android:scaleType="fitXY"
+        android:src="@drawable/sword3"
         android:onClick="selWeapon3"/>
 
-    <Button
+    <ImageButton
         android:id="@+id/bt_selWeapon4"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_toRightOf="@id/bt_selWeapon3"
         android:visibility="invisible"
-        android:text="4"
+        android:scaleType="fitXY"
+        android:src="@drawable/sword4"
         android:onClick="selWeapon4"/>
     </RelativeLayout>
 
@@ -161,78 +170,87 @@
         android:visibility="invisible"
         android:background="@android:color/white">
 
-        <Button
+        <ImageButton
             android:id="@+id/bt_MoveUpLeft"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:text=""
+            android:scaleType="fitXY"
+            android:src="@drawable/lu"
             android:onClick="adjustPathUpLeft"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/bt_MoveLeft"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:scaleType="fitXY"
             android:layout_below="@id/bt_MoveUpLeft"
-            android:text=""
+            android:src="@drawable/l"
             android:onClick="adjustPathLeft"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/bt_MoveDownLeft"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:scaleType="fitXY"
             android:layout_below="@id/bt_MoveLeft"
-            android:text=""
+            android:src="@drawable/ld"
             android:onClick="adjustPathDownLeft"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/bt_MoveDown"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:scaleType="fitXY"
             android:layout_toRightOf="@id/bt_MoveDownLeft"
             android:layout_below="@id/bt_MoveLeft"
-            android:text=""
+            android:src="@drawable/d"
             android:onClick="adjustPathDown"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/bt_MoveDownRight"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:scaleType="fitXY"
             android:layout_toRightOf="@id/bt_MoveDown"
             android:layout_below="@id/bt_MoveLeft"
-            android:text=""
+            android:src="@drawable/rd"
             android:onClick="adjustPathDownRight"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/bt_MoveRight"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:scaleType="fitXY"
             android:layout_toRightOf="@id/bt_MoveDown"
             android:layout_below="@id/bt_MoveUpLeft"
-            android:text=""
+            android:src="@drawable/r"
             android:onClick="adjustPathRight"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/bt_MoveUpRight"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:scaleType="fitXY"
             android:layout_toRightOf="@id/bt_MoveDown"
-            android:text=""
+            android:src="@drawable/ru"
             android:onClick="adjustPathUpRight"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/bt_moveUp"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:scaleType="fitXY"
             android:layout_toRightOf="@id/bt_MoveUpLeft"
-            android:text=""
+            android:src="@drawable/u"
             android:onClick="adjustPathUp"/>
 
         <TextView
             android:id="@+id/tv_mRemain"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_centerInParent="true"
             android:textStyle="bold"
+            android:gravity="center"
             android:text="10"
             android:onClick="resetPath"/>
 

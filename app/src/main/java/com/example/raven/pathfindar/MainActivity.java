@@ -19,6 +19,7 @@ import org.opencv.imgproc.Imgproc;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +33,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.hardware.camera2.params.*;
@@ -120,10 +122,10 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         mOpenCvCameraView.setCvCameraViewListener(this);
         mOpenCvCameraView.enableView();
 
-        Button w1 = (Button)findViewById(R.id.bt_selWeapon1);
-        Button w2 = (Button)findViewById(R.id.bt_selWeapon2);
-        Button w3 = (Button)findViewById(R.id.bt_selWeapon3);
-        Button w4 = (Button)findViewById(R.id.bt_selWeapon4);
+        ImageButton w1 = (ImageButton)findViewById(R.id.bt_selWeapon1);
+        ImageButton w2 = (ImageButton)findViewById(R.id.bt_selWeapon2);
+        ImageButton w3 = (ImageButton)findViewById(R.id.bt_selWeapon3);
+        ImageButton w4 = (ImageButton)findViewById(R.id.bt_selWeapon4);
         w1.setVisibility(View.INVISIBLE);
         w2.setVisibility(View.INVISIBLE);
         w3.setVisibility(View.INVISIBLE);
@@ -217,8 +219,6 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
             col.copyTo(secondary);
 
-            List<Mat> corners = new ArrayList<>();
-
             long addr1 = col.getNativeObjAddr(), addr2 = secondary.getNativeObjAddr();
 
             detectMarkers(addr1, addr2);
@@ -233,6 +233,8 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
     public void toggleTracking(View view) {
 
+        ImageButton trackingButton = (ImageButton) findViewById(R.id.btn_tracking);
+
         if (paused){
             paused = false;
             pauseTimer = PAUSE_TIME;
@@ -242,8 +244,10 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
         if (tracking){
             tracking = false;
+            trackingButton.setImageDrawable(getDrawable(R.drawable.play));
         } else {
             tracking = true;
+            trackingButton.setImageDrawable(getDrawable(R.drawable.pause));
             init();
         }
     }
@@ -252,8 +256,8 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
         if (gridToggle == MOVEMENT) {
             gridToggle = PLOTTING;
-            Button toggleButton = (Button)findViewById(R.id.bt_swapGridType);
-            toggleButton.setText("Plotting");
+            ImageButton toggleButton = (ImageButton)findViewById(R.id.bt_swapGridType);
+            toggleButton.setImageDrawable(getDrawable(R.drawable.compass));
 
             RelativeLayout dpad = (RelativeLayout)findViewById(R.id.layt_dPad);
             dpad.setVisibility(View.VISIBLE);
@@ -264,17 +268,17 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         } else if (gridToggle == PLOTTING){
             gridToggle = ATTACK;
 
-            Button toggleButton = (Button) findViewById(R.id.bt_swapGridType);
-            toggleButton.setText("Attack");
+            ImageButton toggleButton = (ImageButton) findViewById(R.id.bt_swapGridType);
+            toggleButton.setImageDrawable(getDrawable(R.drawable.crossedswords));
 
             RelativeLayout dpad = (RelativeLayout)findViewById(R.id.layt_dPad);
             dpad.setVisibility(View.INVISIBLE);
 
             if (selToken >= 0) {
-                Button w1 = (Button) findViewById(R.id.bt_selWeapon1);
-                Button w2 = (Button) findViewById(R.id.bt_selWeapon2);
-                Button w3 = (Button) findViewById(R.id.bt_selWeapon3);
-                Button w4 = (Button) findViewById(R.id.bt_selWeapon4);
+                ImageButton w1 = (ImageButton) findViewById(R.id.bt_selWeapon1);
+                ImageButton w2 = (ImageButton) findViewById(R.id.bt_selWeapon2);
+                ImageButton w3 = (ImageButton) findViewById(R.id.bt_selWeapon3);
+                ImageButton w4 = (ImageButton) findViewById(R.id.bt_selWeapon4);
 
                 Token selectedToken = tokenList.get(selToken);
 
@@ -305,16 +309,16 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
         } else {
             gridToggle = MOVEMENT;
-            Button toggleButton = (Button)findViewById(R.id.bt_swapGridType);
-            toggleButton.setText("Move");
+            ImageButton toggleButton = (ImageButton)findViewById(R.id.bt_swapGridType);
+            toggleButton.setImageDrawable(getDrawable(R.drawable.fwayarrow));
 
             RelativeLayout dpad = (RelativeLayout)findViewById(R.id.layt_dPad);
             dpad.setVisibility(View.INVISIBLE);
 
-            Button w1 = (Button)findViewById(R.id.bt_selWeapon1);
-            Button w2 = (Button)findViewById(R.id.bt_selWeapon2);
-            Button w3 = (Button)findViewById(R.id.bt_selWeapon3);
-            Button w4 = (Button)findViewById(R.id.bt_selWeapon4);
+            ImageButton w1 = (ImageButton)findViewById(R.id.bt_selWeapon1);
+            ImageButton w2 = (ImageButton)findViewById(R.id.bt_selWeapon2);
+            ImageButton w3 = (ImageButton)findViewById(R.id.bt_selWeapon3);
+            ImageButton w4 = (ImageButton)findViewById(R.id.bt_selWeapon4);
             w1.setVisibility(View.INVISIBLE);
             w2.setVisibility(View.INVISIBLE);
             w3.setVisibility(View.INVISIBLE);
@@ -332,7 +336,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
     public void toggleBlastTemplate(View view) {
 
-        Button blastButton = (Button)findViewById(R.id.bt_blastTemplate);
+        ImageButton blastButton = (ImageButton)findViewById(R.id.bt_blastTemplate);
 
         if (blastType == -1){
             TextView blastRadL = (TextView)findViewById(R.id.tv_blastRad);
@@ -344,7 +348,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             minus.setVisibility(View.VISIBLE);
 
             blastType = LINE;
-            blastButton.setText("Line");
+            blastButton.setImageDrawable(getDrawable(R.drawable.line));
         } else if (blastType == LINE){
             TextView blastRadL = (TextView)findViewById(R.id.tv_blastRad);
             Button plus = (Button)findViewById(R.id.bt_plusBlast);
@@ -355,7 +359,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             minus.setVisibility(View.VISIBLE);
 
             blastType = CONE;
-            blastButton.setText("Cone");
+            blastButton.setImageDrawable(getDrawable(R.drawable.cone));
         } else if (blastType == CONE){
             TextView blastRadL = (TextView)findViewById(R.id.tv_blastRad);
             Button plus = (Button)findViewById(R.id.bt_plusBlast);
@@ -366,10 +370,10 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             minus.setVisibility(View.VISIBLE);
 
             blastType = SPHERE;
-            blastButton.setText("Sphere");
+            blastButton.setImageDrawable(getDrawable(R.drawable.sphere));
         } else if (blastType == SPHERE){
             blastType = -1;
-            blastButton.setText("Blast");
+            blastButton.setImageDrawable(getDrawable(R.drawable.fireball));
 
             TextView blastRadL = (TextView)findViewById(R.id.tv_blastRad);
             Button plus = (Button)findViewById(R.id.bt_plusBlast);
@@ -611,15 +615,18 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         //mOpenCvCameraView.setMaxFrameSize(848, 480);
         mOpenCvCameraView.enableView();
 
+        /*
         if (gridToggle == ATTACK) {
-            Button toggleButton = (Button)findViewById(R.id.bt_swapGridType);
-            toggleButton.setText("Attack");
+            ImageButton toggleButton = (ImageButton)findViewById(R.id.bt_swapGridType);
+            toggleButton.setImageDrawable(getDrawable(R.drawable.crossedswords));
+            View dpad = (View) findViewById(R.id.layt_dPad);
+            dpad.setVisibility(View.INVISIBLE);
 
             if (selToken >= 0) {
-                Button w1 = (Button) findViewById(R.id.bt_selWeapon1);
-                Button w2 = (Button) findViewById(R.id.bt_selWeapon2);
-                Button w3 = (Button) findViewById(R.id.bt_selWeapon3);
-                Button w4 = (Button) findViewById(R.id.bt_selWeapon4);
+                ImageButton w1 = (ImageButton) findViewById(R.id.bt_selWeapon1);
+                ImageButton w2 = (ImageButton) findViewById(R.id.bt_selWeapon2);
+                ImageButton w3 = (ImageButton) findViewById(R.id.bt_selWeapon3);
+                ImageButton w4 = (ImageButton) findViewById(R.id.bt_selWeapon4);
 
                 Token selectedToken = tokenList.get(selToken);
 
@@ -649,13 +656,13 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             }
 
         } else {
-            Button toggleButton = (Button)findViewById(R.id.bt_swapGridType);
-            toggleButton.setText("Move");
+            ImageButton toggleButton = (ImageButton)findViewById(R.id.bt_swapGridType);
+            toggleButton.setImageDrawable(getDrawable(R.drawable.fwayarrow));
 
-            Button w1 = (Button)findViewById(R.id.bt_selWeapon1);
-            Button w2 = (Button)findViewById(R.id.bt_selWeapon2);
-            Button w3 = (Button)findViewById(R.id.bt_selWeapon3);
-            Button w4 = (Button)findViewById(R.id.bt_selWeapon4);
+            ImageButton w1 = (ImageButton)findViewById(R.id.bt_selWeapon1);
+            ImageButton w2 = (ImageButton)findViewById(R.id.bt_selWeapon2);
+            ImageButton w3 = (ImageButton)findViewById(R.id.bt_selWeapon3);
+            ImageButton w4 = (ImageButton)findViewById(R.id.bt_selWeapon4);
             w1.setVisibility(View.INVISIBLE);
             w2.setVisibility(View.INVISIBLE);
             w3.setVisibility(View.INVISIBLE);
@@ -663,16 +670,19 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
             setSelectedWeapon(-1);
         }
-
+*/
 
         if (gridToggle == MOVEMENT) {
-            Button toggleButton = (Button)findViewById(R.id.bt_swapGridType);
-            toggleButton.setText("Move");
+            ImageButton toggleButton = (ImageButton)findViewById(R.id.bt_swapGridType);
+            toggleButton.setImageDrawable(getDrawable(R.drawable.fwayarrow));
 
-            Button w1 = (Button)findViewById(R.id.bt_selWeapon1);
-            Button w2 = (Button)findViewById(R.id.bt_selWeapon2);
-            Button w3 = (Button)findViewById(R.id.bt_selWeapon3);
-            Button w4 = (Button)findViewById(R.id.bt_selWeapon4);
+            View dpad = (View) findViewById(R.id.layt_dPad);
+            dpad.setVisibility(View.INVISIBLE);
+
+            ImageButton w1 = (ImageButton)findViewById(R.id.bt_selWeapon1);
+            ImageButton w2 = (ImageButton)findViewById(R.id.bt_selWeapon2);
+            ImageButton w3 = (ImageButton)findViewById(R.id.bt_selWeapon3);
+            ImageButton w4 = (ImageButton)findViewById(R.id.bt_selWeapon4);
             w1.setVisibility(View.INVISIBLE);
             w2.setVisibility(View.INVISIBLE);
             w3.setVisibility(View.INVISIBLE);
@@ -680,8 +690,11 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
             setSelectedWeapon(-1);
         } else if (gridToggle == PLOTTING){
-            Button toggleButton = (Button)findViewById(R.id.bt_swapGridType);
-            toggleButton.setText("Plotting");
+            ImageButton toggleButton = (ImageButton)findViewById(R.id.bt_swapGridType);
+            toggleButton.setImageDrawable(getDrawable(R.drawable.compass));
+
+            View dpad = (View) findViewById(R.id.layt_dPad);
+            dpad.setVisibility(View.VISIBLE);
 
             plotPath = "";
             setPlottingPath(plotPath);
@@ -689,14 +702,16 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             mRemaining = getMovementRemain();
             updateMRemainLabel();
         } else {
-            Button toggleButton = (Button) findViewById(R.id.bt_swapGridType);
-            toggleButton.setText("Attack");
+            View dpad = (View) findViewById(R.id.layt_dPad);
+            dpad.setVisibility(View.INVISIBLE);
+            ImageButton toggleButton = (ImageButton) findViewById(R.id.bt_swapGridType);
+            toggleButton.setImageDrawable(getDrawable(R.drawable.crossedswords));
 
             if (selToken >= 0) {
-                Button w1 = (Button) findViewById(R.id.bt_selWeapon1);
-                Button w2 = (Button) findViewById(R.id.bt_selWeapon2);
-                Button w3 = (Button) findViewById(R.id.bt_selWeapon3);
-                Button w4 = (Button) findViewById(R.id.bt_selWeapon4);
+                ImageButton w1 = (ImageButton) findViewById(R.id.bt_selWeapon1);
+                ImageButton w2 = (ImageButton) findViewById(R.id.bt_selWeapon2);
+                ImageButton w3 = (ImageButton) findViewById(R.id.bt_selWeapon3);
+                ImageButton w4 = (ImageButton) findViewById(R.id.bt_selWeapon4);
 
                 Token selectedToken = tokenList.get(selToken);
 
@@ -724,6 +739,13 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
                     w4.setVisibility(View.INVISIBLE);
                 }
             }
+        }
+
+        ImageButton trackingButton = (ImageButton) findViewById(R.id.btn_tracking);
+        if (tracking){
+            trackingButton.setImageDrawable(getDrawable(R.drawable.pause));
+        } else {
+            trackingButton.setImageDrawable(getDrawable(R.drawable.play));
         }
 
         paused = true;

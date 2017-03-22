@@ -675,7 +675,6 @@ cv::Point findIntersection(cv::Point h1, cv::Point h2, cv::Point v1, cv::Point v
 
 
 
-
 // Token Code
 cv::Point getCenter(std::vector<cv::Point> contour) {
     // We assume all contours are somewhat balanced, therefore the center is determined using a bounding box.
@@ -2707,7 +2706,7 @@ void drawBlastTemplate(cv::Mat inMat, int type, int size, float alpha){
 
 cv::Mat four_point_transform(cv::Mat image, std::vector<cv::Point2f> gridCorners){
 
-    gridCorners = gridCorners;
+    //gridCorners = gridCorners;
 
     float widthA = sqrt(pow((gridCorners.at(2).x - gridCorners.at(3).x), 2) + pow((gridCorners.at(2).y - gridCorners.at(3).y), 2));
     float widthB = sqrt(pow((gridCorners.at(1).x - gridCorners.at(0).x), 2) + pow((gridCorners.at(1).y - gridCorners.at(0).y), 2));
