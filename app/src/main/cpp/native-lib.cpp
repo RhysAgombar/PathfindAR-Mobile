@@ -985,20 +985,9 @@ void findTokens(cv::Mat imageCopy, cv::Mat imageOut) {
             }
             psuedoTokenVec.at(i).lifespan--;
 
-
-            //psuedoTokenVec.at(i).lifespan = -1;
         }
     }
 
-    /*
-
-             if (psuedoTokenVec.at(i).lifespan > 5){
-            psuedoTokenVec.at(i).lifespan = 5;
-        } else {
-            psuedoTokenVec.at(i).lifespan--;
-        }
-
- */
 
     std::vector<Token> psuedoHolder;
 
@@ -1099,11 +1088,6 @@ void computeGrid(cv::Mat imageCopy, std::vector<cv::Point2f> gridCorners, int ho
             }
         }
 
-
-
-
-
-
     }
 }
 
@@ -1184,9 +1168,6 @@ void colourRange(int id, double alpha, cv::Mat finalMat){
     colour[3] = cv::Scalar(255, 0, 0);
     colour[4] = cv::Scalar(150, 0, 0);
     colour[5] = cv::Scalar(255, 0, 0);
-
-    //colour[4] = cv::Scalar(84, 202, 0);
-    //colour[5] = cv::Scalar(232,44,15);
 
     Weapon selWeapon;
     bool noWeapon = true;
@@ -2783,8 +2764,6 @@ Java_com_example_raven_pathfindar_MainActivity_detectMarkers(JNIEnv *env, jobjec
     if (ids.size() == 0){
         start = false;
     }
-
-
 
     if (start == true){
         // if at least one marker detected
