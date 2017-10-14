@@ -1,5 +1,7 @@
 # PathfindAR-Mobile
-Android version of PathfindAR thesis, by Rhys Agombar, Mark Green
+![PathfindAR Thesis](https://github.com/RhysAgombar/PathfindAR-Mobile/blob/master/Rhys%20Agombar%20Thesis%20-%20Final.pdf), by Rhys Agombar, Mark Green
+
+## PathfindAR: An Augmented Reality App For Grid Navigation In TTRPGs
 
 ## Abstract
 Tabletop gaming sessions are time consuming endeavors, since the math and strategy applied each turn needs to be calculated entirely by it’s human players. Movement and attack ranges, areas of danger, and other pieces of grid information all need to be computed on the fly, which, when done by humans, is slow and prone to errors. To alleviate this, we present ‘PathfindAR’, an augmented reality computer vision app that assists players with grid based navigation and range finding for tabletop role playing games. These activities are two of the most common and time consuming tasks that players do each turn, so by offloading these calculations to a computer, we can improve the speed of game play and make the overall experience more enjoyable.
